@@ -2102,13 +2102,34 @@ function init() {
   });
 
   // Admin & Inventory Portal Trigger
-  const openAdmin = () => renderAdminPortal();
-  ['open-admin-btn'].forEach(id => document.getElementById(id)?.addEventListener('click', openAdmin));
+  const openAdmin = () => {
+    window.location.hash = 'admin';
+    renderAdminPortal();
+  };
+  ['open-admin-btn', 'nav-admin-btn'].forEach(id => document.getElementById(id)?.addEventListener('click', openAdmin));
   document.querySelectorAll('.open-admin-trigger').forEach(el => el.addEventListener('click', openAdmin));
   document.getElementById('admin-modal-overlay')?.addEventListener('click', (e) => {
-    if (e.target === document.getElementById('admin-modal-overlay'))
+    if (e.target === document.getElementById('admin-modal-overlay')) {
       closeModal('admin-modal-overlay', 'admin-modal');
+      if (window.location.hash === '#admin') history.replaceState(null, null, ' ');
+    }
   });
+
+  // URL Hash Auto-Router (e.g. going directly to #admin or #quiz)
+  function handleHashChange() {
+    const hash = window.location.hash.toLowerCase();
+    if (hash === '#admin' || hash === '#portal' || hash === '#inventory') {
+      renderAdminPortal();
+    } else if (hash === '#quiz') {
+      openQuiz();
+    } else if (hash === '#cart') {
+      openCartDrawer();
+    } else if (hash === '#track') {
+      openTracking();
+    }
+  }
+  window.addEventListener('hashchange', handleHashChange);
+  handleHashChange();
 
   // Quiz Buttons
   const openQuiz = () => { quizStep = 0; quizAnswers = []; renderQuiz(); openModal('quiz-modal-overlay', 'quiz-modal'); };

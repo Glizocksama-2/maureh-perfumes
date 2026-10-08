@@ -746,6 +746,225 @@ function renderOrderSuccessModal(order) {
   });
 }
 
+// ─── LEGAL & POLICIES MODAL (PRIVACY, RETURNS, TERMS) ─────────────────────────
+
+function renderLegalModal(initialTab = 'privacy') {
+  const modal = document.getElementById('legal-modal');
+  if (!modal) return;
+
+  const tabs = [
+    { id: 'privacy', label: 'Privacy Policy', icon: 'fas fa-shield-halved' },
+    { id: 'returns', label: 'Returns & Exchange', icon: 'fas fa-arrow-rotate-left' },
+    { id: 'terms', label: 'Terms & Conditions', icon: 'fas fa-scale-balanced' },
+    { id: 'authenticity', label: '100% Authenticity', icon: 'fas fa-certificate' },
+    { id: 'delivery', label: 'Delivery Policy', icon: 'fas fa-truck-fast' }
+  ];
+
+  let currentTab = initialTab;
+
+  function getTabContent(tab) {
+    if (tab === 'privacy') {
+      return `
+        <div class="space-y-4 text-xs text-charcoal-700 leading-relaxed">
+          <div class="p-3.5 rounded-xl bg-gold-50 border border-gold-200 text-charcoal-800">
+            <h4 class="font-bold text-sm text-charcoal-900 mb-1">Maureh Perfumes Privacy Statement</h4>
+            <p class="text-[11px] text-charcoal-600">Last Updated: October 2026 • Compliant with Kenya Data Protection Act 2019</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">1. Information We Collect</h5>
+            <p>When you browse, order, or consult with our fragrance concierge, we collect necessary personal details including your name, contact phone number, email address, physical delivery address, and order transaction history.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">2. Payment Data Security</h5>
+            <p>We do NOT store your sensitive M-Pesa PINs or credit card numbers. All payments are processed through encrypted, certified gateways (Safaricom Daraja API with 256-bit SSL encryption) to ensure zero data vulnerability.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. WhatsApp & Concierge Communications</h5>
+            <p>Direct chats through our WhatsApp hotline (+254 722 144 837) are treated with strict confidentiality and used solely for dispatch updates, olfactory consultations, and order confirmations.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">4. Contact Our Data Protection Officer</h5>
+            <p>For inquiries regarding your personal data, reach out to <code class="text-gold-700 font-bold bg-cream-100 px-1.5 py-0.5 rounded">privacy@maurehperfumes.com</code>.</p>
+          </div>
+        </div>
+      `;
+    } else if (tab === 'returns') {
+      return `
+        <div class="space-y-4 text-xs text-charcoal-700 leading-relaxed">
+          <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900">
+            <h4 class="font-bold text-sm text-emerald-950 mb-1">48-Hour Guarantee & Return Policy</h4>
+            <p class="text-[11px] text-emerald-800">We want you to love your signature scent. Here is our straightforward returns process.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">1. Full Bottle Returns (48 Hours)</h5>
+            <p>Unopened, original cellophane-sealed fragrance boxes may be returned or exchanged within <strong>48 hours of receipt</strong> in Nairobi or countrywide. Flacons must be in pristine, resalable condition with original batch barcodes intact.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">2. Damaged or Faulty Flacons in Transit</h5>
+            <p>In the rare event of damage, atomizer malfunction, or leakage during courier transit, notify us within <strong>24 hours</strong> with photos via WhatsApp. We will immediately dispatch a replacement bottle at zero additional shipping cost.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. Discovery Atomizers & Decants</h5>
+            <p>Due to health, hygiene, and sterile decanting lab protocols, customized 10ml travel decants are non-returnable once dispatched unless damaged upon arrival.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">4. Refund Processing</h5>
+            <p>Approved refunds are disbursed via <strong>instant M-Pesa reversal</strong> or store credit gift voucher within 24 hours of item inspection at the Maureh Vault.</p>
+          </div>
+        </div>
+      `;
+    } else if (tab === 'terms') {
+      return `
+        <div class="space-y-4 text-xs text-charcoal-700 leading-relaxed">
+          <div class="p-3.5 rounded-xl bg-cream-100 border border-gold-200 text-charcoal-900">
+            <h4 class="font-bold text-sm mb-1">Terms of Service & Marketplace Agreement</h4>
+            <p class="text-[11px] text-charcoal-600">Governing your use of Maureh Perfumes Marketplace (maureh-perfumes.vercel.app)</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">1. Marketplace Operation & Independent Boutiques</h5>
+            <p>Maureh Perfumes operates as a curated luxury platform hosting verified independent fragrance houses and boutiques (such as Maison Niche Kenya, Arabian Oud Oasis, and The Decant Atelier). All sellers adhere to our strict provenance certification.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">2. Pricing & Currency</h5>
+            <p>All prices are listed in Kenyan Shillings (KES) inclusive of applicable taxes. Converted rates (USD, EUR, GBP) are provided for international reference and processed transparently at prevailing exchange rates.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. Order Acceptance & Verification</h5>
+            <p>Orders placed via M-Pesa STK Push, Card, or WhatsApp Concierge are subject to stock confirmation at the warehouse before courier handoff.</p>
+          </div>
+        </div>
+      `;
+    } else if (tab === 'authenticity') {
+      return `
+        <div class="space-y-4 text-xs text-charcoal-700 leading-relaxed">
+          <div class="p-3.5 rounded-xl bg-gold-50 border border-gold-300 text-charcoal-900">
+            <h4 class="font-bold text-sm text-gold-800 mb-1">100% Authenticity Guarantee</h4>
+            <p class="text-[11px] text-charcoal-600">Our uncompromising promise to perfume collectors across Kenya.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">1. Direct Manufacturer Sourcing</h5>
+            <p>Every fragrance listed on Maureh Perfumes is sourced directly from certified European perfumeries, authorized Middle Eastern perfume houses, and vetted official regional distributors.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">2. Batch-Code & Quality Inspection</h5>
+            <p>Prior to warehouse shelf placement and dispatch, every bottle undergoes physical batch code verification against brand databases (e.g. CheckFresh/CheckCosmetic) for production freshness and genuine packaging seal.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. Double Your Money Back Promise</h5>
+            <p>If any item purchased on Maureh Perfumes is proven non-authentic by an authorized brand representative, we provide a <strong>200% full money-back guarantee</strong>.</p>
+          </div>
+        </div>
+      `;
+    } else { // delivery
+      return `
+        <div class="space-y-4 text-xs text-charcoal-700 leading-relaxed">
+          <div class="p-3.5 rounded-xl bg-cream-100 border border-gold-200 text-charcoal-900">
+            <h4 class="font-bold text-sm mb-1">Fast & Secure Delivery Across Kenya</h4>
+            <p class="text-[11px] text-charcoal-600">Dispatched in tamper-proof luxury packaging with live tracking.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">1. Nairobi Same-Day Express</h5>
+            <p>Orders placed before 4:00 PM within Nairobi (CBD, Westlands, Kilimani, Karen, Lavington, Runda) are dispatched same day. Delivery is <strong>FREE for orders above KES 15,000</strong> (standard KES 350 for smaller orders).</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">2. Countrywide Deliveries (24 Hours)</h5>
+            <p>Deliveries to Mombasa, Kisumu, Nakuru, Eldoret, Thika, and all major towns are fulfilled within 24 hours via G4S and Fargo Courier.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. Live SMS & Order Tracking</h5>
+            <p>Track your courier in real-time by entering your order ID on our <button class="open-tracking-trigger text-gold-600 font-bold underline">Order Tracker</button>.</p>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function updateModalUI() {
+    modal.innerHTML = `
+      <div class="p-5 border-b border-gold-200 bg-cream-100 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-file-contract text-gold-500 text-lg"></i>
+          <h3 class="font-serif text-lg font-bold text-charcoal-900">Maureh Policies & Legal Information</h3>
+        </div>
+        <button id="close-legal-modal-btn" class="w-8 h-8 rounded-full bg-white border border-gold-200 text-charcoal-500 hover:bg-charcoal-900 hover:text-white flex items-center justify-center transition-colors">
+          <i class="fas fa-times text-xs"></i>
+        </button>
+      </div>
+
+      <!-- Tabs Bar -->
+      <div class="flex overflow-x-auto border-b border-gold-200 bg-white px-4 pt-2 gap-1 text-xs">
+        ${tabs.map(t => `
+          <button 
+            class="legal-tab-btn px-3.5 py-2.5 rounded-t-lg font-bold whitespace-nowrap transition-all border-b-2 flex items-center gap-1.5 ${t.id === currentTab ? 'border-charcoal-900 text-charcoal-900 bg-cream-100' : 'border-transparent text-charcoal-400 hover:text-charcoal-700'}"
+            data-tab="${t.id}"
+          >
+            <i class="${t.icon} text-xs"></i> ${t.label}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Content Area -->
+      <div class="p-6 overflow-y-auto flex-1 bg-white">
+        ${getTabContent(currentTab)}
+      </div>
+
+      <!-- Footer CTA -->
+      <div class="p-4 bg-cream-50 border-t border-gold-100 flex items-center justify-between text-xs">
+        <span class="text-charcoal-500 text-[11px]">Need immediate assistance?</span>
+        <a 
+          href="https://wa.me/254722144837?text=Hello%20Maureh%20Concierge!%20I%20have%20a%20question%20regarding%20your%20policies."
+          target="_blank"
+          class="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all"
+        >
+          <i class="fab fa-whatsapp"></i> Chat with Concierge
+        </a>
+      </div>
+    `;
+
+    document.getElementById('close-legal-modal-btn')?.addEventListener('click', () => {
+      closeModal('legal-modal-overlay', 'legal-modal');
+      if (['#privacy', '#returns', '#terms', '#authenticity', '#delivery'].includes(window.location.hash)) {
+        history.replaceState(null, null, ' ');
+      }
+    });
+
+    modal.querySelectorAll('.legal-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentTab = btn.dataset.tab;
+        window.location.hash = currentTab;
+        updateModalUI();
+      });
+    });
+
+    modal.querySelectorAll('.open-tracking-trigger').forEach(el => {
+      el.addEventListener('click', () => {
+        closeModal('legal-modal-overlay', 'legal-modal');
+        openModal('tracking-modal-overlay', 'tracking-modal');
+      });
+    });
+  }
+
+  updateModalUI();
+  openModal('legal-modal-overlay', 'legal-modal');
+}
+
 // ─── ADMIN & MULTI-VENDOR PORTAL ─────────────────────────────────────────────
 
 function renderAdminPortal() {
@@ -2115,11 +2334,36 @@ function init() {
     }
   });
 
-  // URL Hash Auto-Router (e.g. going directly to #admin or #quiz)
+  // Legal & Policy Triggers
+  document.querySelectorAll('.open-privacy-trigger').forEach(el => el.addEventListener('click', () => { window.location.hash = 'privacy'; renderLegalModal('privacy'); }));
+  document.querySelectorAll('.open-returns-trigger').forEach(el => el.addEventListener('click', () => { window.location.hash = 'returns'; renderLegalModal('returns'); }));
+  document.querySelectorAll('.open-terms-trigger').forEach(el => el.addEventListener('click', () => { window.location.hash = 'terms'; renderLegalModal('terms'); }));
+  document.querySelectorAll('.open-authenticity-trigger').forEach(el => el.addEventListener('click', () => { window.location.hash = 'authenticity'; renderLegalModal('authenticity'); }));
+  document.querySelectorAll('.open-delivery-trigger').forEach(el => el.addEventListener('click', () => { window.location.hash = 'delivery'; renderLegalModal('delivery'); }));
+  document.getElementById('legal-modal-overlay')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('legal-modal-overlay')) {
+      closeModal('legal-modal-overlay', 'legal-modal');
+      if (['#privacy', '#returns', '#terms', '#authenticity', '#delivery'].includes(window.location.hash)) {
+        history.replaceState(null, null, ' ');
+      }
+    }
+  });
+
+  // URL Hash Auto-Router (e.g. going directly to #admin or #privacy)
   function handleHashChange() {
     const hash = window.location.hash.toLowerCase();
     if (hash === '#admin' || hash === '#portal' || hash === '#inventory') {
       renderAdminPortal();
+    } else if (hash === '#privacy') {
+      renderLegalModal('privacy');
+    } else if (hash === '#returns' || hash === '#refunds') {
+      renderLegalModal('returns');
+    } else if (hash === '#terms' || hash === '#tos') {
+      renderLegalModal('terms');
+    } else if (hash === '#authenticity') {
+      renderLegalModal('authenticity');
+    } else if (hash === '#delivery' || hash === '#shipping') {
+      renderLegalModal('delivery');
     } else if (hash === '#quiz') {
       openQuiz();
     } else if (hash === '#cart') {
@@ -2217,6 +2461,7 @@ function init() {
       closeModal('tracking-modal-overlay', 'tracking-modal');
       closeModal('seller-modal-overlay', 'seller-modal');
       closeModal('admin-modal-overlay', 'admin-modal');
+      closeModal('legal-modal-overlay', 'legal-modal');
       closeCartDrawer();
     }
   });

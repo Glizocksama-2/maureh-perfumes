@@ -746,17 +746,19 @@
           </ul>
         </div>
 
-        <!-- Services -->
+        <!-- Services & Legal -->
         <div class="space-y-3">
-          <h4 class="font-cinzel text-cream-200 font-bold uppercase tracking-wider text-xs">Services</h4>
+          <h4 class="font-cinzel text-cream-200 font-bold uppercase tracking-wider text-xs">Services & Policies</h4>
           <ul class="space-y-2 text-charcoal-400">
             <li><button class="open-quiz-trigger hover:text-gold-300 transition-colors text-left">Fragrance DNA Quiz</button></li>
             <li><button class="open-tracking-trigger hover:text-gold-300 transition-colors text-left">Order Tracking</button></li>
             <li><button class="open-seller-trigger hover:text-gold-300 transition-colors text-left">Sell on Maureh</button></li>
             <li><button class="open-admin-trigger text-gold-400 font-bold hover:text-gold-300 transition-colors text-left flex items-center gap-1.5"><i class="fas fa-lock text-[10px]"></i> Client Admin Portal</button></li>
-            <li><a href="#" class="hover:text-gold-300 transition-colors">Authenticity Guarantee</a></li>
-            <li><a href="#" class="hover:text-gold-300 transition-colors">Delivery Policy</a></li>
-            <li><a href="#" class="hover:text-gold-300 transition-colors">Returns & Exchange</a></li>
+            <li><button class="open-authenticity-trigger hover:text-gold-300 transition-colors text-left">Authenticity Guarantee</button></li>
+            <li><button class="open-delivery-trigger hover:text-gold-300 transition-colors text-left">Delivery Policy</button></li>
+            <li><button class="open-returns-trigger hover:text-gold-300 transition-colors text-left">Return & Exchange Policy</button></li>
+            <li><button class="open-privacy-trigger hover:text-gold-300 transition-colors text-left">Privacy Policy</button></li>
+            <li><button class="open-terms-trigger hover:text-gold-300 transition-colors text-left">Terms & Conditions</button></li>
           </ul>
         </div>
 
@@ -1031,6 +1033,13 @@
   <div id="admin-modal-overlay" class="fixed inset-0 bg-charcoal-900/75 z-50 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-3 sm:p-6">
     <div id="admin-modal" class="bg-white border border-gold-300 rounded-2xl max-w-5xl w-full max-h-[94vh] flex flex-col shadow-2xl transform scale-95 transition-transform duration-300 overflow-hidden">
       <!-- Dynamic Admin Content Rendered by app.js -->
+    </div>
+  </div>
+
+  <!-- Legal & Policies Modal (Privacy, Return Policy, Terms) -->
+  <div id="legal-modal-overlay" class="fixed inset-0 bg-charcoal-900/75 z-50 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-3 sm:p-6">
+    <div id="legal-modal" class="bg-white border border-gold-300 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl transform scale-95 transition-transform duration-300 overflow-hidden">
+      <!-- Dynamic Legal Content Rendered by app.js -->
     </div>
   </div>
 

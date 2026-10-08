@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --gold-primary: #B8962E;
+  --gold-light: #F3E5AB;
+  --gold-dark: #8A6D15;
+  --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #B8962E 60%, #8A6D15 100%);
+  --cream: #FAF8F3;
+  --cream-2: #F3F0E8;
+  --card-bg: #FFFFFF;
+  --border-light: rgba(184, 150, 46, 0.18);
+  --text-primary: #1A1712;
+  --text-secondary: #4A4540;
+  --text-muted: #8C8480;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background-color: #FAFAF8;
+  color: #1A1712;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #D4AF37;
+  color: #fff;
+}
+
+/* ── Typography ──────────────────────────── */
+.font-serif-luxury { font-family: 'Playfair Display', Georgia, serif; }
+.font-cinzel        { font-family: 'Cinzel', serif; }
+
+/* ── Gold Gradient Utilities ─────────────── */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #B8962E 0%, #8A6D15 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-gold-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #B8962E 60%, #8A6D15 100%);
+}
+
+/* ── Glass / Surface Panels ──────────────── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(184, 150, 46, 0.22);
+  box-shadow: 0 4px 24px rgba(184, 150, 46, 0.08);
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(184, 150, 46, 0.20);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+}
+
+/* ── Card ────────────────────────────────── */
+.luxury-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(184, 150, 46, 0.18);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+.luxury-card:hover {
+  border-color: rgba(184, 150, 46, 0.55);
+  box-shadow: 0 12px 40px rgba(184, 150, 46, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ── Gold Border Glow ────────────────────── */
+.border-gold-glow {
+  border: 1px solid rgba(184, 150, 46, 0.28);
+}
+.border-gold-glow:hover {
+  border-color: rgba(184, 150, 46, 0.70);
+  box-shadow: 0 0 20px rgba(184, 150, 46, 0.14);
+}
+
+/* ── Custom Scrollbar ────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F3F0E8; }
+::-webkit-scrollbar-thumb { background: #D4C090; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #B8962E; }
+
+/* ── Animations ──────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+@keyframes pulseGold {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+.gold-pulse-glow { animation: pulseGold 2.5s ease-in-out infinite; }
+
+/* ── Input focus ring ────────────────────── */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #B8962E !important;
+  box-shadow: 0 0 0 3px rgba(184, 150, 46, 0.12);
+}
+
+/* ── Accent range input ──────────────────── */
+input[type=range] { accent-color: #B8962E; }
+
+/* ── Note Pyramid hover ──────────────────── */
+.pyramid-tier { transition: all 0.2s ease; }
+.pyramid-tier:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(184, 150, 46, 0.14);
+}
+
+/* ── No scrollbar (for pill rows) ───────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Toast ───────────────────────────────── */
+.toast-message {
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}

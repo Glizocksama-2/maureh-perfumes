@@ -62,11 +62,14 @@ npx vercel
 
 ---
 
-## 🔒 Default Credentials & Passkeys
+## 🔒 Official Contacts & Portal Credentials
 
-| Portal | Role | Access / Credentials |
+| Portal / Channel | Detail | Value |
 |---|---|---|
-| **Admin Portal** | General Manager | Passcode: `admin123` (or `maureh2026`) |
+| **WhatsApp Concierge** | Orders & Inquiries | `0102796209` (`+254 102 796 209`) |
+| **Official Email** | Store & Privacy | `machariamoureen78@gmail.com` |
+| **Admin Portal** | General Manager Access | Passcode: `admin123` (or `maureh2026`) |
+| **Flagship Vault Vendor** | Store Owner Login | `machariamoureen78@gmail.com` / `vault123` |
 | **Vendor Login** | Maison Niche Kenya | `maison@niche.co.ke` / `niche123` |
 | **Vendor Login** | Arabian Oud Oasis | `sales@arabianoud.co.ke` / `oud123` |
 | **Vendor Login** | The Decant Atelier | `contact@decants.co.ke` / `decant123` |

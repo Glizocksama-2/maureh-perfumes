@@ -312,7 +312,7 @@ function renderQuickView(p) {
 
         <!-- WhatsApp Order -->
         <a 
-          href="https://wa.me/254722144837?text=Hi%20Maureh%20Perfumes!%20I%20would%20like%20to%20order%20${encodeURIComponent(p.name + ' by ' + p.brand)}%20in%20size%20${encodeURIComponent(defaultSize.size)}.%20Price%20listed:%20KES%20${(p.priceKES || 0).toLocaleString()}.%20Please%20confirm%20availability."
+          href="https://wa.me/254102796209?text=Hi%20Maureh%20Perfumes!%20I%20would%20like%20to%20order%20${encodeURIComponent(p.name + ' by ' + p.brand)}%20in%20size%20${encodeURIComponent(defaultSize.size)}.%20Price%20listed:%20KES%20${(p.priceKES || 0).toLocaleString()}.%20Please%20confirm%20availability."
           target="_blank"
           class="w-full py-3 rounded-full bg-emerald-50 border border-emerald-300 hover:bg-emerald-100 text-emerald-800 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
         >
@@ -520,7 +520,7 @@ function renderCheckout() {
         </div>
         <div>
           <label class="block text-xs font-semibold text-charcoal-700 mb-1">Safaricom / WhatsApp Phone Number *</label>
-          <input required type="tel" id="chk-phone" placeholder="e.g. 0722 144 837 or +254 7XX XXX XXX" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400 font-mono">
+          <input required type="tel" id="chk-phone" placeholder="e.g. 0102 796 209 or +254 102 796 209" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400 font-mono">
         </div>
         <div>
           <label class="block text-xs font-semibold text-charcoal-700 mb-1">Delivery Address</label>
@@ -730,7 +730,7 @@ function renderOrderSuccessModal(order) {
           Back to Storefront
         </button>
         <a 
-          href="https://wa.me/254722144837?text=Hi%20Maureh%20Perfumes!%20I%20just%20placed%20Order%20${order.id}%20with%20M-PESA%20Ref%20${order.transactionRef}.%20Please%20confirm%20rider%20dispatch."
+          href="https://wa.me/254102796209?text=Hi%20Maureh%20Perfumes!%20I%20just%20placed%20Order%20${order.id}%20with%20M-PESA%20Ref%20${order.transactionRef}.%20Please%20confirm%20rider%20dispatch."
           target="_blank"
           class="flex-1 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2"
         >
@@ -783,12 +783,12 @@ function renderLegalModal(initialTab = 'privacy') {
 
           <div class="space-y-2">
             <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. WhatsApp & Concierge Communications</h5>
-            <p>Direct chats through our WhatsApp hotline (+254 722 144 837) are treated with strict confidentiality and used solely for dispatch updates, olfactory consultations, and order confirmations.</p>
+            <p>Direct chats through our WhatsApp hotline (0102796209 / +254 102 796 209) are treated with strict confidentiality and used solely for dispatch updates, olfactory consultations, and order confirmations.</p>
           </div>
 
           <div class="space-y-2">
             <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">4. Contact Our Data Protection Officer</h5>
-            <p>For inquiries regarding your personal data, reach out to <code class="text-gold-700 font-bold bg-cream-100 px-1.5 py-0.5 rounded">privacy@maurehperfumes.com</code>.</p>
+            <p>For inquiries regarding your personal data, reach out to <code class="text-gold-700 font-bold bg-cream-100 px-1.5 py-0.5 rounded">machariamoureen78@gmail.com</code>.</p>
           </div>
         </div>
       `;
@@ -929,7 +929,7 @@ function renderLegalModal(initialTab = 'privacy') {
       <div class="p-4 bg-cream-50 border-t border-gold-100 flex items-center justify-between text-xs">
         <span class="text-charcoal-500 text-[11px]">Need immediate assistance?</span>
         <a 
-          href="https://wa.me/254722144837?text=Hello%20Maureh%20Concierge!%20I%20have%20a%20question%20regarding%20your%20policies."
+          href="https://wa.me/254102796209?text=Hello%20Maureh%20Concierge!%20I%20have%20a%20question%20regarding%20your%20policies."
           target="_blank"
           class="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition-all"
         >
@@ -2029,7 +2029,54 @@ function renderProductGrid() {
   if (perfumes.length === 0) {
     grid.innerHTML = '';
     grid.classList.add('hidden');
-    emptyState?.classList.remove('hidden');
+    if (emptyState) {
+      emptyState.classList.remove('hidden');
+      if (store.perfumes.length === 0) {
+        emptyState.innerHTML = `
+          <div class="w-16 h-16 mx-auto rounded-full bg-cream-200 border border-gold-300 flex items-center justify-center text-gold-500 text-2xl mb-4 shadow-inner">
+            <i class="fas fa-sparkles"></i>
+          </div>
+          <h3 class="font-serif text-2xl font-bold text-charcoal-900">Fragrance Vault Ready For Stocking</h3>
+          <p class="text-xs sm:text-sm text-charcoal-600 max-w-md mx-auto mt-2 leading-relaxed">
+            Welcome to Maureh Perfumes! The catalog is currently clear for the store owner to add custom fragrances, set pricing, upload flacon photos, and manage inventory.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
+            <button class="open-admin-trigger px-6 py-3 rounded-full bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center gap-2">
+              <i class="fas fa-plus text-gold-300"></i> Add Fragrances via Admin Portal
+            </button>
+            <a href="https://wa.me/254102796209?text=Hello%20Maureh%20Perfumes!%20I%20am%20inquiring%20about%20fragrances." target="_blank" class="px-6 py-3 rounded-full bg-emerald-50 border border-emerald-300 hover:bg-emerald-100 text-emerald-800 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2">
+              <i class="fab fa-whatsapp text-emerald-600"></i> Inquire on WhatsApp
+            </a>
+          </div>
+        `;
+        emptyState.querySelectorAll('.open-admin-trigger').forEach(btn => {
+          btn.addEventListener('click', () => {
+            openModal('admin-modal-overlay', 'admin-modal');
+            renderAdminPortal();
+          });
+        });
+      } else {
+        emptyState.innerHTML = `
+          <div class="w-16 h-16 mx-auto rounded-full bg-cream-200 border border-gold-200 flex items-center justify-center text-gold-400 text-2xl mb-4">
+            <i class="fas fa-wind"></i>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-charcoal-800">No Fragrances Found</h3>
+          <p class="text-xs text-charcoal-500 max-w-sm mx-auto mt-2">Try widening your price range or resetting filters.</p>
+          <button id="empty-reset-btn" class="mt-4 px-6 py-2.5 rounded-full bg-charcoal-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-charcoal-800 transition-colors">
+            Reset Filters
+          </button>
+        `;
+        document.getElementById('empty-reset-btn')?.addEventListener('click', () => {
+          store.resetFilters();
+          const priceInput = document.getElementById('price-range');
+          if (priceInput) priceInput.value = 120000;
+          const display = document.getElementById('price-slider-display');
+          if (display) display.textContent = 'KSh 120,000';
+          renderCategoryPills();
+          renderProductGrid();
+        });
+      }
+    }
   } else {
     grid.classList.remove('hidden');
     emptyState?.classList.add('hidden');
@@ -2305,7 +2352,7 @@ function init() {
     const lines = store.cart.map(i => `• ${i.name} (${i.size}) x${i.quantity} — KES ${(i.priceKES * i.quantity).toLocaleString()}`).join('\n');
     const total = `TOTAL: KES ${store.getCartTotalKES().toLocaleString()}`;
     const text = `Hello Maureh Perfumes! I would like to place this order:\n\n${lines}\n\n${total}\n\nPlease confirm and arrange delivery. Thank you!`;
-    window.open(`https://wa.me/254722144837?text=${encodeURIComponent(text)}`, '_blank');
+    window.open(`https://wa.me/254102796209?text=${encodeURIComponent(text)}`, '_blank');
   });
 
   // Quick View Overlay close
@@ -2316,8 +2363,13 @@ function init() {
 
   // Hero Quick View button
   document.querySelector('[data-quickview="mrh-01"]')?.addEventListener('click', () => {
-    const p = store.perfumes.find(x => x.id === 'mrh-01');
-    if (p) renderQuickView(p);
+    const p = store.perfumes.find(x => x.id === 'mrh-01') || store.perfumes[0];
+    if (p) {
+      renderQuickView(p);
+    } else {
+      openModal('admin-modal-overlay', 'admin-modal');
+      renderAdminPortal();
+    }
   });
 
   // Admin & Inventory Portal Trigger

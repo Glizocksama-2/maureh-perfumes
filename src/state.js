@@ -10,7 +10,7 @@ export const CURRENCIES = {
 };
 
 export const VENDOR_ACCOUNTS = [
-  { id: "maureh-vault", name: "Maureh Flagship Vault", email: "vault@maureh.com", pass: "vault123", commissionRate: 0.0 },
+  { id: "maureh-vault", name: "Maureh Flagship Vault", email: "machariamoureen78@gmail.com", pass: "vault123", commissionRate: 0.0 },
   { id: "maison-niche", name: "Maison Niche Kenya", email: "maison@niche.co.ke", pass: "niche123", commissionRate: 0.15 },
   { id: "arabian-oud", name: "Arabian Oud Oasis", email: "sales@arabianoud.co.ke", pass: "oud123", commissionRate: 0.12 },
   { id: "decant-atelier", name: "The Decant Atelier", email: "contact@decants.co.ke", pass: "decant123", commissionRate: 0.10 }
@@ -25,10 +25,10 @@ class Store {
     this.isAdminAuthenticated = localStorage.getItem("maureh_admin_auth") === "true";
     this.activeVendorUser = JSON.parse(localStorage.getItem("maureh_vendor_user")) || null;
 
-    // Load or initialize dynamic perfumes catalog
+    // Load or initialize dynamic perfumes catalog (clean slate)
     try {
-      const savedPerfumes = JSON.parse(localStorage.getItem("maureh_inventory"));
-      this.perfumes = Array.isArray(savedPerfumes) && savedPerfumes.length > 0 ? savedPerfumes : [...INITIAL_PERFUMES];
+      const savedPerfumes = JSON.parse(localStorage.getItem("maureh_inventory_v2"));
+      this.perfumes = Array.isArray(savedPerfumes) ? savedPerfumes : [...INITIAL_PERFUMES];
     } catch {
       this.perfumes = [...INITIAL_PERFUMES];
     }
@@ -40,15 +40,13 @@ class Store {
           id: "MRH-89421",
           date: new Date(Date.now() - 3600000 * 3).toISOString(),
           customerName: "Dr. Ken Mutua",
-          phone: "+254 722 144 837",
+          phone: "+254 102 796 209",
           deliveryArea: "Westlands, GTC Nairobi",
           paymentMethod: "M-PESA (STK Push)",
           transactionRef: "MPESA-QK9482X10",
           status: "Out for Delivery",
-          items: [
-            { name: "Baccarat Rouge 540 Extrait", size: "70ml Bottle", quantity: 1, priceKES: 58500 }
-          ],
-          totalKES: 58500
+          items: [],
+          totalKES: 0
         }
       ];
     } catch {
@@ -328,7 +326,7 @@ class Store {
   // ─── INVENTORY CRUD OPERATIONS ────────────────────────────────────────────
 
   saveInventory() {
-    localStorage.setItem("maureh_inventory", JSON.stringify(this.perfumes));
+    localStorage.setItem("maureh_inventory_v2", JSON.stringify(this.perfumes));
   }
 
   async addPerfume(data) {

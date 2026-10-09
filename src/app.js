@@ -1350,7 +1350,48 @@ function renderAdminInventoryTable(filterQuery = '') {
   }
 
   container.innerHTML = `
-    <div class="overflow-x-auto bg-white rounded-xl border border-gold-200 shadow-sm">
+    <!-- Mobile Card View (Small Screens) -->
+    <div class="block md:hidden space-y-3">
+      ${items.map(p => `
+        <div class="bg-white border border-gold-200 rounded-xl p-4 shadow-sm space-y-3">
+          <div class="flex items-start gap-3">
+            <img src="${p.image}" alt="${p.name}" class="w-16 h-16 rounded-xl object-cover border border-gold-200 flex-shrink-0">
+            <div class="flex-1 min-w-0">
+              <span class="text-[9px] text-gold-600 font-bold uppercase tracking-wider block">${p.brand}</span>
+              <h4 class="font-bold text-sm text-charcoal-900 truncate leading-snug">${p.name}</h4>
+              <p class="text-[10px] text-charcoal-500">${p.concentration || 'EDP'} • ${p.category || 'Niche'}</p>
+              <div class="font-cinzel font-bold text-gold-600 text-sm mt-1">
+                ${store.formatPrice(p.priceKES)}
+              </div>
+            </div>
+          </div>
+          
+          <div class="pt-2 border-t border-gold-100 flex items-center justify-between gap-2">
+            <button 
+              class="admin-toggle-stock-btn flex-1 py-2 rounded-lg text-xs font-bold border transition-colors ${p.inStock ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-rose-50 text-rose-700 border-rose-300'}"
+              data-id="${p.id}"
+            >
+              ${p.inStock ? '● In Stock' : '✕ Out of Stock'}
+            </button>
+            <button 
+              class="admin-edit-btn px-3 py-2 rounded-lg bg-cream-100 hover:bg-gold-50 border border-gold-200 text-gold-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              data-id="${p.id}"
+            >
+              <i class="fas fa-pen-to-square"></i> Edit
+            </button>
+            <button 
+              class="admin-delete-btn px-3 py-2 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              data-id="${p.id}"
+            >
+              <i class="fas fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Desktop Table View (Medium & Larger Screens) -->
+    <div class="hidden md:block overflow-x-auto bg-white rounded-xl border border-gold-200 shadow-sm">
       <table class="w-full text-left text-xs text-charcoal-700">
         <thead class="bg-cream-100 border-b border-gold-200 text-[11px] uppercase tracking-wider text-charcoal-600 font-bold">
           <tr>
@@ -2184,15 +2225,17 @@ function updateBadges() {
 // ─── BRAND FILTER POPULATOR ───────────────────────────────────────────────────
 
 function populateBrandFilter() {
-  const select = document.getElementById('brand-filter');
-  if (!select) return;
-  select.innerHTML = '<option value="All">All Fragrance Houses</option>';
-  const brands = [...new Set(store.perfumes.map(p => p.brand))].sort();
-  brands.forEach(brand => {
-    const opt = document.createElement('option');
-    opt.value = brand;
-    opt.textContent = brand;
-    select.appendChild(opt);
+  ['brand-filter', 'mobile-brand-filter'].forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    select.innerHTML = '<option value="All">All Fragrance Houses</option>';
+    const brands = [...new Set(store.perfumes.map(p => p.brand))].sort();
+    brands.forEach(brand => {
+      const opt = document.createElement('option');
+      opt.value = brand;
+      opt.textContent = brand;
+      select.appendChild(opt);
+    });
   });
 }
 
@@ -2308,15 +2351,108 @@ function init() {
   ['reset-filters-btn', 'empty-reset-btn'].forEach(id => {
     document.getElementById(id)?.addEventListener('click', () => {
       store.resetFilters();
-      ['brand-filter', 'family-filter', 'concentration-filter', 'vendor-filter', 'sort-filter']
+      ['brand-filter', 'family-filter', 'concentration-filter', 'vendor-filter', 'sort-filter',
+       'mobile-brand-filter', 'mobile-family-filter', 'mobile-concentration-filter', 'mobile-vendor-filter', 'mobile-sort-filter']
         .forEach(fid => { const el = document.getElementById(fid); if (el) el.value = 'All'; });
       const priceRange = document.getElementById('price-range');
+      const mobilePriceRange = document.getElementById('mobile-price-range');
       if (priceRange) priceRange.value = 120000;
+      if (mobilePriceRange) mobilePriceRange.value = 120000;
       const display = document.getElementById('price-slider-display');
+      const mobileDisplay = document.getElementById('mobile-price-slider-display');
       if (display) display.textContent = 'KSh 120,000';
+      if (mobileDisplay) mobileDisplay.textContent = 'KSh 120,000';
       renderCategoryPills();
       renderProductGrid();
     });
+  });
+
+  // Mobile Filter Drawer Handlers
+  const openMobileFilter = () => {
+    openModal('mobile-filter-modal-overlay', 'mobile-filter-modal');
+  };
+  const closeMobileFilter = () => {
+    closeModal('mobile-filter-modal-overlay', 'mobile-filter-modal');
+  };
+
+  document.getElementById('mobile-filter-toggle')?.addEventListener('click', openMobileFilter);
+  document.getElementById('close-mobile-filter-btn')?.addEventListener('click', closeMobileFilter);
+  document.getElementById('mobile-filter-modal-overlay')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('mobile-filter-modal-overlay')) closeMobileFilter();
+  });
+
+  const mobileFilters = [
+    { id: 'mobile-price-range', event: 'input', handler: (e) => {
+      const val = parseInt(e.target.value);
+      store.setFilter('maxPrice', val);
+      const display = document.getElementById('mobile-price-slider-display');
+      const desktopDisplay = document.getElementById('price-slider-display');
+      const desktopRange = document.getElementById('price-range');
+      if (display) display.textContent = `KSh ${val.toLocaleString()}`;
+      if (desktopDisplay) desktopDisplay.textContent = `KSh ${val.toLocaleString()}`;
+      if (desktopRange) desktopRange.value = val;
+      renderProductGrid();
+    }},
+    { id: 'mobile-brand-filter', event: 'change', handler: (e) => { 
+      store.setFilter('brand', e.target.value); 
+      const el = document.getElementById('brand-filter'); if (el) el.value = e.target.value;
+      renderProductGrid(); 
+    }},
+    { id: 'mobile-family-filter', event: 'change', handler: (e) => { 
+      store.setFilter('family', e.target.value); 
+      const el = document.getElementById('family-filter'); if (el) el.value = e.target.value;
+      renderProductGrid(); 
+    }},
+    { id: 'mobile-concentration-filter', event: 'change', handler: (e) => { 
+      store.setFilter('concentration', e.target.value); 
+      const el = document.getElementById('concentration-filter'); if (el) el.value = e.target.value;
+      renderProductGrid(); 
+    }},
+    { id: 'mobile-vendor-filter', event: 'change', handler: (e) => { 
+      store.setFilter('vendor', e.target.value); 
+      const el = document.getElementById('vendor-filter'); if (el) el.value = e.target.value;
+      renderProductGrid(); 
+    }},
+    { id: 'mobile-sort-filter', event: 'change', handler: (e) => { 
+      store.setFilter('sortBy', e.target.value); 
+      const el = document.getElementById('sort-filter'); if (el) el.value = e.target.value;
+      renderProductGrid(); 
+    }},
+  ];
+
+  mobileFilters.forEach(({ id, event, handler }) => {
+    document.getElementById(id)?.addEventListener(event, handler);
+  });
+
+  document.getElementById('mobile-reset-filters-btn')?.addEventListener('click', () => {
+    store.resetFilters();
+    ['brand-filter', 'family-filter', 'concentration-filter', 'vendor-filter', 'sort-filter',
+     'mobile-brand-filter', 'mobile-family-filter', 'mobile-concentration-filter', 'mobile-vendor-filter', 'mobile-sort-filter']
+      .forEach(fid => { const el = document.getElementById(fid); if (el) el.value = 'All'; });
+    const priceRange = document.getElementById('price-range');
+    const mobilePriceRange = document.getElementById('mobile-price-range');
+    if (priceRange) priceRange.value = 120000;
+    if (mobilePriceRange) mobilePriceRange.value = 120000;
+    const display = document.getElementById('price-slider-display');
+    const mobileDisplay = document.getElementById('mobile-price-slider-display');
+    if (display) display.textContent = 'KSh 120,000';
+    if (mobileDisplay) mobileDisplay.textContent = 'KSh 120,000';
+    renderCategoryPills();
+    renderProductGrid();
+  });
+
+  document.getElementById('mobile-apply-filters-btn')?.addEventListener('click', () => {
+    closeMobileFilter();
+    document.getElementById('catalog-section')?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // Mobile Wishlist button click
+  document.getElementById('mobile-wishlist-btn')?.addEventListener('click', () => {
+    if (store.wishlist.length === 0) {
+      store.toast("Your Wishlist is empty. Tap the heart on any fragrance to save it!", "info");
+    } else {
+      store.toast(`You have ${store.wishlist.length} fragrance${store.wishlist.length !== 1 ? 's' : ''} saved in your Wishlist.`, "info");
+    }
   });
 
   // Cart Drawer

@@ -128,3 +128,35 @@ input[type=range] { accent-color: #B8962E; }
   transition: all 0.3s ease;
   pointer-events: auto;
 }
+
+/* ── Mobile Safe Area & Touch Optimizations ── */
+.safe-bottom {
+  padding-bottom: max(0.6rem, env(safe-area-inset-bottom, 0.6rem));
+}
+
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+@media (max-width: 640px) {
+  /* Prevent annoying iOS Safari automatic zooming on input focus */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Mobile bottom sheet slide up animation */
+@media (max-width: 640px) {
+  .mobile-bottom-sheet {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    margin-bottom: 0 !important;
+    max-height: 88vh !important;
+  }
+}

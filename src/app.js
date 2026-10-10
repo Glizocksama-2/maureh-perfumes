@@ -523,19 +523,19 @@ function renderCheckout() {
           <input required type="tel" id="chk-phone" placeholder="e.g. 0102 796 209 or +254 102 796 209" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400 font-mono">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-charcoal-700 mb-1">Delivery Address</label>
-          <input required type="text" id="chk-address" placeholder="e.g. Westlands, GTC Towers / Karen / Kilimani" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400">
+          <label class="block text-xs font-semibold text-charcoal-700 mb-1">Delivery Address or Pickup Note *</label>
+          <input required type="text" id="chk-address" placeholder="e.g. Kahawa Sukari Pickup / House no., Estate, or Street" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-charcoal-700 mb-1">Area / City</label>
+          <label class="block text-xs font-semibold text-charcoal-700 mb-1">Fulfillment Option / Area *</label>
           <select required id="chk-area" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400">
-            <option value="Nairobi CBD (Same Day Delivery)">Nairobi CBD (Same Day – Free above KES 15k)</option>
-            <option value="Westlands / Parklands / Spring Valley">Westlands / Parklands / Spring Valley</option>
-            <option value="Karen / Lavington / Runda / Muthaiga">Karen / Lavington / Runda / Muthaiga</option>
-            <option value="Kilimani / Kileleshwa / Hurlingham">Kilimani / Kileleshwa / Hurlingham</option>
-            <option value="Mombasa & Coastal Region">Mombasa & Coastal Region</option>
-            <option value="Kisumu & Western Kenya">Kisumu & Western Kenya</option>
-            <option value="Countrywide Courier (Fargo / G4S)">Countrywide Courier (Fargo / G4S)</option>
+            <option value="Kahawa Sukari (Personal Pickup Point — Free)">📍 Kahawa Sukari (Personal Pickup Point — Free)</option>
+            <option value="Nairobi CBD & Environs (Doorstep Delivery)">Nairobi CBD & Environs (Doorstep Delivery)</option>
+            <option value="Kahawa Sukari / Wendani / Kasarani / Thika Rd (Direct Delivery)">Kahawa Sukari / Wendani / Kasarani / Thika Rd (Direct Delivery)</option>
+            <option value="Westlands / Parklands / Spring Valley (Doorstep Delivery)">Westlands / Parklands / Spring Valley (Doorstep Delivery)</option>
+            <option value="Kilimani / Kileleshwa / Lavington / Hurlingham (Doorstep Delivery)">Kilimani / Kileleshwa / Lavington / Hurlingham (Doorstep Delivery)</option>
+            <option value="Karen / Runda / Muthaiga / Kiambu Rd (Doorstep Delivery)">Karen / Runda / Muthaiga / Kiambu Rd (Doorstep Delivery)</option>
+            <option value="Countrywide Courier Delivery (Fargo / G4S Across Kenya)">Countrywide Courier Delivery (Fargo / G4S Across Kenya)</option>
           </select>
         </div>
 
@@ -873,22 +873,27 @@ function renderLegalModal(initialTab = 'privacy') {
       return `
         <div class="space-y-4 text-xs text-charcoal-700 leading-relaxed">
           <div class="p-3.5 rounded-xl bg-cream-100 border border-gold-200 text-charcoal-900">
-            <h4 class="font-bold text-sm mb-1">Fast & Secure Delivery Across Kenya</h4>
-            <p class="text-[11px] text-charcoal-600">Dispatched in tamper-proof luxury packaging with live tracking.</p>
+            <h4 class="font-bold text-sm mb-1">Online Deliveries & Personal Pickup</h4>
+            <p class="text-[11px] text-charcoal-600">We operate 100% online with direct deliveries to your doorstep and a personal pickup point in Kahawa Sukari.</p>
           </div>
 
           <div class="space-y-2">
-            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">1. Nairobi Same-Day Express</h5>
-            <p>Orders placed before 4:00 PM within Nairobi (CBD, Westlands, Kilimani, Karen, Lavington, Runda) are dispatched same day. Delivery is <strong>FREE for orders above KES 15,000</strong> (standard KES 350 for smaller orders).</p>
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">1. Personal Pickup at Kahawa Sukari (Free)</h5>
+            <p>Customers can pick up their fragrances personally in <strong>Kahawa Sukari, Nairobi</strong> at no delivery charge. Simply choose "Kahawa Sukari Pickup" at checkout and coordinate your collection time via our WhatsApp concierge (<strong>0102796209</strong>).</p>
           </div>
 
           <div class="space-y-2">
-            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">2. Countrywide Deliveries (24 Hours)</h5>
-            <p>Deliveries to Mombasa, Kisumu, Nakuru, Eldoret, Thika, and all major towns are fulfilled within 24 hours via G4S and Fargo Courier.</p>
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">2. Nairobi Direct Doorstep Delivery</h5>
+            <p>Orders within Nairobi are dispatched via fast dedicated rider delivery. Delivery is <strong>FREE for orders above KES 15,000</strong> (standard KES 350 for smaller orders).</p>
           </div>
 
           <div class="space-y-2">
-            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. Live SMS & Order Tracking</h5>
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. Countrywide Deliveries Across Kenya (24 Hours)</h5>
+            <p>Deliveries to Mombasa, Kisumu, Nakuru, Eldoret, Thika, and all regional towns arrive within 24 hours via G4S and Fargo Courier.</p>
+          </div>
+
+          <div class="space-y-2">
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">4. Live Order & Dispatch Tracking</h5>
             <p>Track your courier in real-time by entering your order ID on our <button class="open-tracking-trigger text-gold-600 font-bold underline">Order Tracker</button>.</p>
           </div>
         </div>
@@ -2268,7 +2273,7 @@ function handleOrderTrackingSearch() {
         </div>
         <div class="flex items-start gap-3">
           <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold"><i class="fas fa-check"></i></span>
-          <div><p class="font-bold text-charcoal-800">Dispatched via Dedicated Courier</p><p class="text-[10px] text-charcoal-400">Nairobi logistics hub</p></div>
+          <div><p class="font-bold text-charcoal-800">Dispatched via Dedicated Courier</p><p class="text-[10px] text-charcoal-400">Kahawa Sukari hub (or ready for collection)</p></div>
         </div>
         <div class="flex items-start gap-3">
           <span class="w-5 h-5 rounded-full bg-gold-400 text-charcoal-900 flex items-center justify-center text-[10px] font-bold animate-pulse"><i class="fas fa-motorcycle"></i></span>

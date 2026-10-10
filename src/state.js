@@ -41,7 +41,7 @@ class Store {
           date: new Date(Date.now() - 3600000 * 3).toISOString(),
           customerName: "Dr. Ken Mutua",
           phone: "+254 102 796 209",
-          deliveryArea: "Westlands, GTC Nairobi",
+          deliveryArea: "Kahawa Sukari (Pickup Point)",
           paymentMethod: "M-PESA (STK Push)",
           transactionRef: "MPESA-QK9482X10",
           status: "Out for Delivery",

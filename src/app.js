@@ -519,52 +519,81 @@ function renderCheckout() {
           </div>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-charcoal-700 mb-1">Safaricom / WhatsApp Phone Number *</label>
-          <input required type="tel" id="chk-phone" placeholder="e.g. 0102 796 209 or +254 102 796 209" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400 font-mono">
+          <label class="block text-xs font-semibold text-charcoal-700 mb-1">Phone Number (M-Pesa / Airtel Money / WhatsApp) *</label>
+          <input required type="tel" id="chk-phone" placeholder="e.g. 0102 796 209 or 07XX XXX XXX" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400 font-mono">
         </div>
         <div>
           <label class="block text-xs font-semibold text-charcoal-700 mb-1">Delivery Address or Pickup Note *</label>
           <input required type="text" id="chk-address" placeholder="e.g. Kahawa Sukari Pickup / House no., Estate, or Street" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-charcoal-700 mb-1">Fulfillment Option / Area *</label>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-charcoal-700">Fulfillment Option / Destination *</label>
+            <span class="text-[10px] text-gold-700 font-semibold bg-gold-50 px-2 py-0.5 rounded-full border border-gold-200">Town Delivery / Distance Rates Apply</span>
+          </div>
           <select required id="chk-area" class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2.5 text-xs text-charcoal-800 focus:border-gold-400">
-            <option value="Kahawa Sukari (Personal Pickup Point — Free)">📍 Kahawa Sukari (Personal Pickup Point — Free)</option>
-            <option value="Nairobi CBD & Environs (Doorstep Delivery)">Nairobi CBD & Environs (Doorstep Delivery)</option>
-            <option value="Kahawa Sukari / Wendani / Kasarani / Thika Rd (Direct Delivery)">Kahawa Sukari / Wendani / Kasarani / Thika Rd (Direct Delivery)</option>
-            <option value="Westlands / Parklands / Spring Valley (Doorstep Delivery)">Westlands / Parklands / Spring Valley (Doorstep Delivery)</option>
-            <option value="Kilimani / Kileleshwa / Lavington / Hurlingham (Doorstep Delivery)">Kilimani / Kileleshwa / Lavington / Hurlingham (Doorstep Delivery)</option>
-            <option value="Karen / Runda / Muthaiga / Kiambu Rd (Doorstep Delivery)">Karen / Runda / Muthaiga / Kiambu Rd (Doorstep Delivery)</option>
-            <option value="Countrywide Courier Delivery (Fargo / G4S Across Kenya)">Countrywide Courier Delivery (Fargo / G4S Across Kenya)</option>
+            <option value="Kahawa Sukari (Personal Pickup Point — Free)" data-fee="0">📍 Kahawa Sukari (Personal Pickup Point — Free)</option>
+            <option value="Nairobi CBD / Town (Flat Delivery)" data-fee="250">🏙️ Nairobi CBD / Town (Standard Town Delivery — KES 250)</option>
+            <option value="Kahawa Sukari / Wendani / Kasarani / Thika Rd (Direct Rider)" data-fee="250">🛵 Kahawa Sukari / Wendani / Kasarani / Thika Rd (KES 250)</option>
+            <option value="Westlands / Parklands / Spring Valley (Direct Rider)" data-fee="350">🛵 Westlands / Parklands / Spring Valley (KES 350)</option>
+            <option value="Kilimani / Kileleshwa / Lavington / Hurlingham (Direct Rider)" data-fee="350">🛵 Kilimani / Kileleshwa / Lavington / Hurlingham (KES 350)</option>
+            <option value="South B / South C / Langata / Nairobi West (Direct Rider)" data-fee="350">🛵 South B / South C / Langata / Nairobi West (KES 350)</option>
+            <option value="Karen / Rongai / Ngong / Runda / Muthaiga (Distance Courier)" data-fee="500">🛵 Karen / Rongai / Ngong / Runda / Muthaiga (KES 500)</option>
+            <option value="Ruiru / Juja / Thika Town / Kiambu (Distance Courier)" data-fee="450">🛵 Ruiru / Juja / Thika Town / Kiambu (KES 450)</option>
+            <option value="Rest of Kenya — Regional Towns (Fargo / G4S Courier)" data-fee="500">📦 Rest of Kenya — Distance Courier (Fargo / G4S — KES 500)</option>
           </select>
+          <p class="text-[10px] text-charcoal-500 mt-1 italic">
+            💡 Deliveries in Town are flat & quick. Deliveries anywhere apart from Town have a fee depending on the distance.
+          </p>
+        </div>
+
+        <!-- Order Breakdown with dynamic delivery fee -->
+        <div class="p-3 bg-cream-50 rounded-xl border border-gold-200 space-y-1.5 text-xs text-charcoal-700">
+          <div class="flex justify-between">
+            <span>Perfumes Subtotal:</span>
+            <span class="font-cinzel font-semibold text-charcoal-900">${store.formatPrice(total)}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span>Delivery Fee (<span id="chk-fee-label">Pickup Point</span>):</span>
+            <span id="chk-fee-amount" class="font-semibold text-emerald-700">Free</span>
+          </div>
+          <div class="border-t border-gold-200 pt-1.5 flex justify-between font-bold text-sm text-charcoal-900">
+            <span>Grand Total:</span>
+            <span id="chk-grand-total" class="font-cinzel text-gold-600 text-base">${store.formatPrice(total)}</span>
+          </div>
         </div>
 
         <!-- Payment Method -->
         <div class="space-y-2">
-          <label class="block text-xs font-semibold text-charcoal-700">Select Payment Method</label>
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex items-center gap-2 p-3 rounded-lg bg-white border-2 border-emerald-400 cursor-pointer shadow-sm">
-              <input type="radio" name="paymentMethod" value="M-PESA (STK Push)" checked class="accent-emerald-600">
-              <span class="text-xs text-charcoal-800 font-bold">📱 M-Pesa STK Push</span>
+          <label class="block text-xs font-semibold text-charcoal-700">Select Payment Method (Accepted: M-Pesa, Airtel Money & Cash on Delivery)</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <label class="flex items-center gap-2.5 p-3 rounded-lg bg-white border-2 border-emerald-500 cursor-pointer shadow-sm pay-method-label">
+              <input type="radio" name="paymentMethod" value="M-PESA" checked class="accent-emerald-600">
+              <div>
+                <span class="text-xs text-charcoal-900 font-bold block">📱 M-Pesa</span>
+                <span class="text-[10px] text-charcoal-500">STK Push / Till 849201</span>
+              </div>
             </label>
-            <label class="flex items-center gap-2 p-3 rounded-lg bg-white border border-gold-200 cursor-pointer hover:border-gold-400 transition-colors shadow-sm">
-              <input type="radio" name="paymentMethod" value="Credit / Debit Card" class="accent-gold-500">
-              <span class="text-xs text-charcoal-800 font-semibold">💳 Card Payment</span>
+            <label class="flex items-center gap-2.5 p-3 rounded-lg bg-white border border-gold-200 cursor-pointer hover:border-rose-400 transition-colors shadow-sm pay-method-label">
+              <input type="radio" name="paymentMethod" value="Airtel Money" class="accent-rose-600">
+              <div>
+                <span class="text-xs text-charcoal-900 font-bold block">📲 Airtel Money</span>
+                <span class="text-[10px] text-charcoal-500">Till / Prompt</span>
+              </div>
             </label>
-            <label class="flex items-center gap-2 p-3 rounded-lg bg-white border border-gold-200 cursor-pointer hover:border-gold-400 transition-colors shadow-sm">
-              <input type="radio" name="paymentMethod" value="WhatsApp Pay" class="accent-emerald-600">
-              <span class="text-xs text-charcoal-800 font-semibold"><i class="fab fa-whatsapp text-emerald-500"></i> WhatsApp Pay</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 rounded-lg bg-white border border-gold-200 cursor-pointer hover:border-gold-400 transition-colors shadow-sm">
+            <label class="flex items-center gap-2.5 p-3 rounded-lg bg-white border border-gold-200 cursor-pointer hover:border-amber-400 transition-colors shadow-sm pay-method-label">
               <input type="radio" name="paymentMethod" value="Cash on Delivery" class="accent-amber-500">
-              <span class="text-xs text-charcoal-800 font-semibold">💵 Cash on Delivery</span>
+              <div>
+                <span class="text-xs text-charcoal-900 font-bold block">💵 Cash on Delivery</span>
+                <span class="text-[10px] text-charcoal-500">Pay rider upon delivery</span>
+              </div>
             </label>
           </div>
         </div>
 
         <button type="submit" id="submit-checkout-btn" class="w-full py-4 rounded-full bg-charcoal-900 hover:bg-charcoal-800 text-white font-extrabold text-xs uppercase tracking-wider shadow-xl transition-all flex items-center justify-center gap-2">
           <i class="fas fa-shield-halved text-gold-300"></i>
-          <span>Pay & Confirm Order – ${store.formatPrice(total)}</span>
+          <span id="submit-checkout-btn-text">Confirm Order – ${store.formatPrice(total)}</span>
         </button>
       </form>
     </div>
@@ -572,6 +601,46 @@ function renderCheckout() {
 
   document.getElementById('close-checkout-btn')?.addEventListener('click', () => {
     closeModal('checkout-modal-overlay', 'checkout-modal');
+  });
+
+  const areaSelect = document.getElementById('chk-area');
+  const feeLabel = document.getElementById('chk-fee-label');
+  const feeAmount = document.getElementById('chk-fee-amount');
+  const grandTotalEl = document.getElementById('chk-grand-total');
+  const submitBtnText = document.getElementById('submit-checkout-btn-text');
+
+  function updateDeliveryFee() {
+    const selectedOption = areaSelect?.selectedOptions[0];
+    const fee = parseInt(selectedOption?.getAttribute('data-fee') || '0', 10);
+    const orderGrandTotal = total + fee;
+
+    if (feeLabel) feeLabel.textContent = fee === 0 ? 'Free Pickup' : 'Distance Rate';
+    if (feeAmount) {
+      feeAmount.textContent = fee === 0 ? 'Free' : `+KES ${fee.toLocaleString()}`;
+      feeAmount.className = fee === 0 ? 'font-semibold text-emerald-700' : 'font-semibold text-charcoal-800';
+    }
+    if (grandTotalEl) grandTotalEl.textContent = store.formatPrice(orderGrandTotal);
+    if (submitBtnText) submitBtnText.textContent = `Confirm Order – ${store.formatPrice(orderGrandTotal)}`;
+  }
+
+  areaSelect?.addEventListener('change', updateDeliveryFee);
+
+  // Radio button styling update
+  document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      document.querySelectorAll('.pay-method-label').forEach(lbl => {
+        lbl.classList.remove('border-2', 'border-emerald-500', 'border-rose-500', 'border-amber-500');
+        lbl.classList.add('border', 'border-gold-200');
+      });
+      const parentLabel = radio.closest('.pay-method-label');
+      if (parentLabel) {
+        parentLabel.classList.remove('border', 'border-gold-200');
+        parentLabel.classList.add('border-2');
+        if (radio.value === 'M-PESA') parentLabel.classList.add('border-emerald-500');
+        else if (radio.value === 'Airtel Money') parentLabel.classList.add('border-rose-500');
+        else parentLabel.classList.add('border-amber-500');
+      }
+    });
   });
 
   document.getElementById('checkout-form-inner')?.addEventListener('submit', (e) => {
@@ -582,7 +651,9 @@ function renderCheckout() {
     const phone = document.getElementById('chk-phone')?.value;
     const deliveryAddress = document.getElementById('chk-address')?.value;
     const deliveryArea = document.getElementById('chk-area')?.value;
-    const selectedPayMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'M-PESA (STK Push)';
+    const selectedOption = areaSelect?.selectedOptions[0];
+    const deliveryFee = parseInt(selectedOption?.getAttribute('data-fee') || '0', 10);
+    const selectedPayMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'M-PESA';
 
     const orderPayload = {
       firstName,
@@ -590,14 +661,16 @@ function renderCheckout() {
       phone,
       deliveryAddress,
       deliveryArea,
+      deliveryFee,
       paymentMethod: selectedPayMethod
     };
 
-    if (selectedPayMethod === 'M-PESA (STK Push)') {
-      // Launch M-Pesa STK Push Simulator
+    if (selectedPayMethod === 'M-PESA') {
       renderMpesaPrompt(orderPayload);
+    } else if (selectedPayMethod === 'Airtel Money') {
+      renderAirtelMoneyPrompt(orderPayload);
     } else {
-      // Direct placement
+      // Cash on Delivery
       const created = store.createOrder(orderPayload);
       renderOrderSuccessModal(created);
     }
@@ -606,13 +679,13 @@ function renderCheckout() {
   openModal('checkout-modal-overlay', 'checkout-modal');
 }
 
-// ─── M-PESA STK PUSH SIMULATOR MODAL ──────────────────────────────────────────
+// ─── M-PESA & AIRTEL MONEY SIMULATOR MODALS ──────────────────────────────────
 
 function renderMpesaPrompt(orderPayload) {
   const modal = document.getElementById('checkout-modal');
   if (!modal) return;
 
-  const total = store.getCartTotalKES();
+  const total = store.getCartTotalKES() + (orderPayload.deliveryFee || 0);
   const phone = orderPayload.phone;
 
   modal.innerHTML = `
@@ -672,8 +745,9 @@ function renderMpesaPrompt(orderPayload) {
     clearInterval(timerInterval);
     const txCode = `MPESA-Q${Math.floor(100000 + Math.random() * 900000)}K`;
     orderPayload.transactionRef = txCode;
-    const created = store.createOrder(orderPayload);
-    renderOrderSuccessModal(created);
+    store.createOrder(orderPayload).then(created => {
+      renderOrderSuccessModal(created);
+    });
   }
 
   document.getElementById('confirm-mpesa-sim-btn')?.addEventListener('click', () => {
@@ -686,20 +760,104 @@ function renderMpesaPrompt(orderPayload) {
   });
 }
 
+function renderAirtelMoneyPrompt(orderPayload) {
+  const modal = document.getElementById('checkout-modal');
+  if (!modal) return;
+
+  const total = store.getCartTotalKES() + (orderPayload.deliveryFee || 0);
+  const phone = orderPayload.phone;
+
+  modal.innerHTML = `
+    <div class="p-4 text-center space-y-5">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-rose-600 text-white flex items-center justify-center text-3xl shadow-lg shadow-rose-600/30 animate-pulse">
+        <i class="fas fa-mobile-screen"></i>
+      </div>
+
+      <div>
+        <span class="text-xs uppercase font-extrabold text-rose-700 tracking-wider">Airtel Money Kenya Gateway</span>
+        <h3 class="font-serif text-2xl font-bold text-charcoal-900 mt-1">Airtel Money Prompt</h3>
+        <p class="text-xs text-charcoal-500 mt-1">A payment authorization prompt of <strong class="text-charcoal-900">${store.formatPrice(total)}</strong> has been sent to <strong class="text-rose-700 font-mono">${phone}</strong></p>
+      </div>
+
+      <!-- Airtel Phone Simulator Graphic -->
+      <div class="max-w-xs mx-auto p-4 rounded-2xl bg-charcoal-900 text-white text-left space-y-3 shadow-2xl border-2 border-rose-500">
+        <div class="flex items-center justify-between text-[10px] text-charcoal-400">
+          <span>AIRTEL MONEY</span>
+          <span>KENYA</span>
+        </div>
+        <div class="bg-charcoal-800 p-3 rounded-xl text-xs space-y-1">
+          <p class="font-bold text-rose-400">Approve payment of KES ${total.toLocaleString()} to MAUREH PERFUMES?</p>
+          <p class="text-[10px] text-charcoal-300">Enter Airtel Money PIN:</p>
+          <div class="tracking-widest text-base font-mono text-center text-gold-300">••••</div>
+        </div>
+      </div>
+
+      <div id="airtel-countdown" class="text-xs text-charcoal-500 font-semibold flex items-center justify-center gap-2">
+        <i class="fas fa-spinner fa-spin text-rose-600"></i> Waiting for PIN authorization on phone... (5s)
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button id="cancel-airtel-btn" class="flex-1 py-3 rounded-full border border-gold-300 text-charcoal-600 hover:bg-cream-100 text-xs font-bold uppercase tracking-wider">
+          Cancel
+        </button>
+        <button id="confirm-airtel-sim-btn" class="flex-1 py-3 rounded-full bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold uppercase tracking-wider shadow-lg flex items-center justify-center gap-2">
+          <i class="fas fa-check"></i> Authorize Payment
+        </button>
+      </div>
+    </div>
+  `;
+
+  let timerSec = 4;
+  const timerInterval = setInterval(() => {
+    timerSec--;
+    const countdownEl = document.getElementById('airtel-countdown');
+    if (countdownEl) {
+      countdownEl.innerHTML = `<i class="fas fa-spinner fa-spin text-rose-600"></i> Waiting for PIN authorization on phone... (${timerSec}s)`;
+    }
+    if (timerSec <= 0) {
+      clearInterval(timerInterval);
+      completeAirtelPayment();
+    }
+  }, 1000);
+
+  function completeAirtelPayment() {
+    clearInterval(timerInterval);
+    const txCode = `AIRTEL-${Math.floor(100000 + Math.random() * 900000)}`;
+    orderPayload.transactionRef = txCode;
+    store.createOrder(orderPayload).then(created => {
+      renderOrderSuccessModal(created);
+    });
+  }
+
+  document.getElementById('confirm-airtel-sim-btn')?.addEventListener('click', () => {
+    completeAirtelPayment();
+  });
+
+  document.getElementById('cancel-airtel-btn')?.addEventListener('click', () => {
+    clearInterval(timerInterval);
+    closeModal('checkout-modal-overlay', 'checkout-modal');
+  });
+}
+
 function renderOrderSuccessModal(order) {
   const modal = document.getElementById('checkout-modal');
   if (!modal) return;
 
+  const isCOD = order.paymentMethod === 'Cash on Delivery';
+  const isAirtel = order.paymentMethod === 'Airtel Money';
+
   modal.innerHTML = `
     <div class="p-6 text-center space-y-5">
-      <div class="w-16 h-16 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl shadow-md">
-        <i class="fas fa-check-circle"></i>
+      <div class="w-16 h-16 mx-auto rounded-full ${isCOD ? 'bg-amber-100 text-amber-600' : isAirtel ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'} flex items-center justify-center text-3xl shadow-md">
+        <i class="fas ${isCOD ? 'fa-hand-holding-dollar' : 'fa-check-circle'}"></i>
       </div>
 
       <div>
-        <span class="text-xs uppercase font-extrabold text-emerald-700 tracking-wider">Payment Verified & Authorized</span>
+        <span class="text-xs uppercase font-extrabold ${isCOD ? 'text-amber-700' : isAirtel ? 'text-rose-700' : 'text-emerald-700'} tracking-wider">
+          ${isCOD ? 'Order Placed • Cash on Delivery' : 'Payment Verified & Confirmed'}
+        </span>
         <h3 class="font-serif text-2xl font-bold text-charcoal-900 mt-1">Thank You for Your Order!</h3>
-        <p class="text-xs text-charcoal-500 mt-0.5">Your luxury flacons have been reserved at the Maureh Vault.</p>
+        <p class="text-xs text-charcoal-500 mt-0.5">Your perfume order has been reserved for prompt dispatch.</p>
       </div>
 
       <div class="p-4 rounded-xl bg-cream-100 border border-gold-200 text-left text-xs space-y-2">
@@ -708,19 +866,33 @@ function renderOrderSuccessModal(order) {
           <span class="text-gold-600 font-cinzel text-sm">${order.id}</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-charcoal-500">M-PESA Receipt / Ref:</span>
-          <span class="font-mono text-emerald-700 font-bold">${order.transactionRef}</span>
+          <span class="text-charcoal-500">Payment Method:</span>
+          <span class="font-semibold text-charcoal-900">${order.paymentMethod}</span>
         </div>
+        ${!isCOD ? `
+        <div class="flex justify-between">
+          <span class="text-charcoal-500">Transaction Reference:</span>
+          <span class="font-mono text-emerald-700 font-bold">${order.transactionRef}</span>
+        </div>` : `
+        <div class="flex justify-between">
+          <span class="text-charcoal-500">Payment Status:</span>
+          <span class="font-semibold text-amber-700">Pay ${store.formatPrice(order.totalKES)} upon delivery</span>
+        </div>`}
         <div class="flex justify-between">
           <span class="text-charcoal-500">Recipient:</span>
           <span class="text-charcoal-800 font-semibold">${order.customerName} (${order.phone})</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-charcoal-500">Delivery Area:</span>
-          <span class="text-charcoal-800">${order.deliveryArea}</span>
+          <span class="text-charcoal-500">Delivery Destination:</span>
+          <span class="text-charcoal-800 text-right max-w-[200px] truncate">${order.deliveryArea}</span>
         </div>
+        ${order.deliveryFee ? `
+        <div class="flex justify-between">
+          <span class="text-charcoal-500">Distance Delivery Fee:</span>
+          <span class="text-charcoal-800 font-medium">+KES ${order.deliveryFee.toLocaleString()}</span>
+        </div>` : ''}
         <div class="flex justify-between pt-1 border-t border-gold-200 font-bold text-sm">
-          <span>Total Paid:</span>
+          <span>Total:</span>
           <span class="font-cinzel text-gold-600">${store.formatPrice(order.totalKES)}</span>
         </div>
       </div>
@@ -730,7 +902,7 @@ function renderOrderSuccessModal(order) {
           Back to Storefront
         </button>
         <a 
-          href="https://wa.me/254102796209?text=Hi%20Maureh%20Perfumes!%20I%20just%20placed%20Order%20${order.id}%20with%20M-PESA%20Ref%20${order.transactionRef}.%20Please%20confirm%20rider%20dispatch."
+          href="https://wa.me/254102796209?text=Hi%20Maureh%20Perfumes!%20I%20just%20placed%20Order%20${order.id}%20via%20${encodeURIComponent(order.paymentMethod)}.%20Destination:%20${encodeURIComponent(order.deliveryArea)}.%20Please%20confirm%20delivery%20dispatch."
           target="_blank"
           class="flex-1 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2"
         >
@@ -874,22 +1046,22 @@ function renderLegalModal(initialTab = 'privacy') {
         <div class="space-y-4 text-xs text-charcoal-700 leading-relaxed">
           <div class="p-3.5 rounded-xl bg-cream-100 border border-gold-200 text-charcoal-900">
             <h4 class="font-bold text-sm mb-1">Online Deliveries & Personal Pickup</h4>
-            <p class="text-[11px] text-charcoal-600">We operate 100% online with direct deliveries to your doorstep and a personal pickup point in Kahawa Sukari.</p>
+            <p class="text-[11px] text-charcoal-600">We operate 100% online with direct deliveries to your doorstep and personal pickup in Kahawa Sukari.</p>
           </div>
 
           <div class="space-y-2">
-            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">1. Personal Pickup at Kahawa Sukari (Free)</h5>
-            <p>Customers can pick up their fragrances personally in <strong>Kahawa Sukari, Nairobi</strong> at no delivery charge. Simply choose "Kahawa Sukari Pickup" at checkout and coordinate your collection time via our WhatsApp concierge (<strong>0102796209</strong>).</p>
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">1. Free Personal Pickup at Kahawa Sukari</h5>
+            <p>Customers are warmly welcome to collect orders in person in <strong>Kahawa Sukari, Nairobi</strong> at no extra cost. Select "Kahawa Sukari Pickup" at checkout and coordinate your collection with our WhatsApp concierge (<strong>0102796209</strong>).</p>
           </div>
 
           <div class="space-y-2">
-            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">2. Nairobi Direct Doorstep Delivery</h5>
-            <p>Orders within Nairobi are dispatched via fast dedicated rider delivery. Delivery is <strong>FREE for orders above KES 15,000</strong> (standard KES 350 for smaller orders).</p>
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">2. Town & Distance-Based Delivery Pricing</h5>
+            <p>We deliver anywhere across Kenya! Delivery within <strong>Town / Nairobi CBD</strong> is flat and rapid. Delivery anywhere apart from town is priced affordably depending on the distance (e.g. Ruiru, Karen, Rongai, Thika, or countrywide via Fargo / G4S courier).</p>
           </div>
 
           <div class="space-y-2">
-            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. Countrywide Deliveries Across Kenya (24 Hours)</h5>
-            <p>Deliveries to Mombasa, Kisumu, Nakuru, Eldoret, Thika, and all regional towns arrive within 24 hours via G4S and Fargo Courier.</p>
+            <h5 class="font-bold text-charcoal-900 uppercase tracking-wider text-[11px]">3. Accepted Payment Methods</h5>
+            <p>We accept <strong>M-PESA</strong>, <strong>Airtel Money</strong>, and <strong>Cash on Delivery (COD)</strong>. You can pay securely before dispatch or hand cash directly to the rider upon inspection of your flacon.</p>
           </div>
 
           <div class="space-y-2">

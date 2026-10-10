@@ -272,20 +272,26 @@ class Store {
     const trackingCode = `MRH-${Math.floor(10000 + Math.random() * 90000)}`;
     const txRef = orderData.transactionRef || `MPESA-Q${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
 
+    const deliveryFee = orderData.deliveryFee || 0;
+    const subtotal = this.getCartSubtotalKES();
+    const discount = this.getCartDiscountKES();
+    const grandTotal = Math.max(0, subtotal - discount + deliveryFee);
+
     const newOrder = {
       id: trackingCode,
       date: new Date().toISOString(),
       customerName: `${orderData.firstName || ''} ${orderData.lastName || ''}`.trim() || 'Valued Patron',
       phone: orderData.phone || '+254 7XX XXX XXX',
-      deliveryArea: orderData.deliveryArea || 'Nairobi Central',
+      deliveryArea: orderData.deliveryArea || 'Kahawa Sukari (Pickup Point)',
       deliveryAddress: orderData.deliveryAddress || 'Delivery Address',
-      paymentMethod: orderData.paymentMethod || 'M-PESA (STK Push)',
+      deliveryFee: deliveryFee,
+      paymentMethod: orderData.paymentMethod || 'M-PESA',
       transactionRef: txRef,
       status: 'Order Placed & Verified',
       items: [...this.cart],
-      subtotalKES: this.getCartSubtotalKES(),
-      discountKES: this.getCartDiscountKES(),
-      totalKES: this.getCartTotalKES()
+      subtotalKES: subtotal,
+      discountKES: discount,
+      totalKES: grandTotal
     };
 
     this.orders.unshift(newOrder);

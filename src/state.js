@@ -25,10 +25,10 @@ class Store {
     this.isAdminAuthenticated = localStorage.getItem("maureh_admin_auth") === "true";
     this.activeVendorUser = JSON.parse(localStorage.getItem("maureh_vendor_user")) || null;
 
-    // Load or initialize dynamic perfumes catalog (clean slate)
+    // Load or initialize dynamic perfumes catalog (v3 real inventory)
     try {
-      const savedPerfumes = JSON.parse(localStorage.getItem("maureh_inventory_v2"));
-      this.perfumes = Array.isArray(savedPerfumes) ? savedPerfumes : [...INITIAL_PERFUMES];
+      const savedPerfumes = JSON.parse(localStorage.getItem("maureh_inventory_v3"));
+      this.perfumes = (Array.isArray(savedPerfumes) && savedPerfumes.length > 0) ? savedPerfumes : [...INITIAL_PERFUMES];
     } catch {
       this.perfumes = [...INITIAL_PERFUMES];
     }
@@ -332,7 +332,7 @@ class Store {
   // ─── INVENTORY CRUD OPERATIONS ────────────────────────────────────────────
 
   saveInventory() {
-    localStorage.setItem("maureh_inventory_v2", JSON.stringify(this.perfumes));
+    localStorage.setItem("maureh_inventory_v3", JSON.stringify(this.perfumes));
   }
 
   async addPerfume(data) {

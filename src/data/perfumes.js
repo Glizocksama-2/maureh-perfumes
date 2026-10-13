@@ -1211,10 +1211,10 @@ export const PERFUMES = [
     "id": "mrh-marshmallow-blush",
     "name": "Marshmallow Blush",
     "brand": "Paris Corner",
-    "subtitle": "Eau de Parfum \u2022 Spun Sugar, Strawberry Cream & Marshmallow Fluff",
+    "subtitle": "Eau de Parfum \u2022 Fluffy, Sugary, Marshmallow-Like",
     "gender": "Women",
     "category": "Women",
-    "family": "Sweet Gourmand",
+    "family": "Fluffy, Sugary Gourmand",
     "concentration": "Eau de Parfum",
     "priceKES": 4800,
     "originalPriceKES": 5500,
@@ -1223,7 +1223,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": true,
-    "description": "The ultimate sweet-tooth indulgence. Pours like powdered pink marshmallows, ripe alpine strawberries, and whipped cream. Pure happiness and soft, cozy gourmand perfection.",
+    "description": "Marshmallow Blush is a dreamy, fluffy, sugary, and marshmallow-like confection created for sweet-scent lovers. Features soft pink marshmallows, whipped cream, and spun sugar with moderate strength that lasts around 4–7 hours.",
     "notes": {
       "top": [
         "Marshmallow",
@@ -1241,10 +1241,10 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Yummy Sweet Aura",
-      "longevity": "8-10 Hours",
-      "season": "All-Year Comfort",
-      "occasion": "Daily Casual, Sweet Lovers, Cozy Dates"
+      "sillage": "Moderate",
+      "longevity": "Around 4–7 hours",
+      "season": "All-Year Comfort \u2022 Sweet Scent Favorite",
+      "occasion": "Daily Wear, Sweet-Scent Lovers, Casual"
     },
     "sizes": [
       {
@@ -1258,11 +1258,11 @@ export const PERFUMES = [
       }
     ],
     "accords": [
+      "Marshmallow",
+      "Sugary",
+      "Fluffy",
       "Sweet",
-      "Vanilla",
-      "Fruity",
-      "Lactonic",
-      "Powdery"
+      "Vanilla"
     ],
     "image": "/images/products/marshmallow-blush.jpg",
     "vendorId": "maureh-vault",

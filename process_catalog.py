@@ -698,10 +698,10 @@ products = [
         'id': 'mrh-marshmallow-blush',
         'name': 'Marshmallow Blush',
         'brand': 'Paris Corner',
-        'subtitle': 'Eau de Parfum • Spun Sugar, Strawberry Cream & Marshmallow Fluff',
+        'subtitle': 'Eau de Parfum • Fluffy, Sugary, Marshmallow-Like',
         'gender': 'Women',
         'category': 'Women',
-        'family': 'Sweet Gourmand',
+        'family': 'Fluffy, Sugary Gourmand',
         'concentration': 'Eau de Parfum',
         'priceKES': 4800,
         'originalPriceKES': 5500,
@@ -710,23 +710,23 @@ products = [
         'inStock': True,
         'isBestseller': True,
         'isNew': True,
-        'description': 'The ultimate sweet-tooth indulgence. Pours like powdered pink marshmallows, ripe alpine strawberries, and whipped cream. Pure happiness and soft, cozy gourmand perfection.',
+        'description': 'Marshmallow Blush is a dreamy, fluffy, sugary, and marshmallow-like confection created for sweet-scent lovers. Features soft pink marshmallows, whipped cream, and spun sugar with moderate strength that lasts around 4–7 hours.',
         'notes': {
             'top': ['Marshmallow', 'Strawberry', 'Sugar'],
             'heart': ['Whipped Cream', 'Vanilla Orchid'],
             'base': ['Musk', 'Warm Amber', 'Caramel']
         },
         'performance': {
-            'sillage': 'Yummy Sweet Aura',
-            'longevity': '8-10 Hours',
-            'season': 'All-Year Comfort',
-            'occasion': 'Daily Casual, Sweet Lovers, Cozy Dates'
+            'sillage': 'Moderate',
+            'longevity': 'Around 4–7 hours',
+            'season': 'All-Year Comfort • Sweet Scent Favorite',
+            'occasion': 'Daily Wear, Sweet-Scent Lovers, Casual'
         },
         'sizes': [
             {'size': '10ml Decant', 'priceKES': 1000},
             {'size': '100ml Bottle', 'priceKES': 4800, 'isDefault': True}
         ],
-        'accords': ['Sweet', 'Vanilla', 'Fruity', 'Lactonic', 'Powdery']
+        'accords': ['Marshmallow', 'Sugary', 'Fluffy', 'Sweet', 'Vanilla']
     },
     {
         'file': 'WhatsApp Image 2026-10-13 at 12.54.54.jpeg',

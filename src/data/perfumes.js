@@ -1334,12 +1334,12 @@ export const PERFUMES = [
   {
     "slug": "badee-al-oud-noble-blush",
     "id": "mrh-noble-blush",
-    "name": "Bade'e Al Oud (Noble Blush)",
+    "name": "Noble Blush",
     "brand": "Lattafa",
-    "subtitle": "Eau de Parfum \u2022 Sweet Almond Milk, Candied Rose & Creamy Sandalwood",
+    "subtitle": "Eau de Parfum \u2022 Creamy, Sweet, Powdery",
     "gender": "Women",
-    "category": "Arabian Oud",
-    "family": "Almond Rose Gourmand",
+    "category": "Women",
+    "family": "Creamy Sweet Powdery",
     "concentration": "Eau de Parfum",
     "priceKES": 5400,
     "originalPriceKES": 6200,
@@ -1348,7 +1348,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": true,
-    "description": "The newest and most luxurious feminine release in the prestigious Bade'e Al Oud dynasty. An opulent frosted blush bottle housing sweet almond milk, sugar meringue, delicate Turkish rose, and creamy sandalwood.",
+    "description": "Noble Blush is an irresistibly creamy, sweet, and powdery fragrance crafted for women. Featuring comforting rose milk, whipped meringue, delicate almond, and cozy vanilla, it offers moderate projection that lasts around 4–7 hours for everyday elegance.",
     "notes": {
       "top": [
         "Rose Milk",
@@ -1358,19 +1358,19 @@ export const PERFUMES = [
       "heart": [
         "Meringue",
         "Turkish Rose",
-        "Vanilla"
+        "Powdery Notes"
       ],
       "base": [
+        "Vanilla",
         "Sandalwood",
-        "White Musk",
-        "Cedar"
+        "White Musk"
       ]
     },
     "performance": {
-      "sillage": "Creamy Luxury Trail",
-      "longevity": "11-13 Hours",
-      "season": "All-Season Opulence",
-      "occasion": "Weddings, Luxury Outings, VIP Dinners"
+      "sillage": "Moderate",
+      "longevity": "Around 4–7 hours",
+      "season": "Daily Wear \u2022 All-Season Feminine",
+      "occasion": "Daily Wear, Brunch, Date Night"
     },
     "sizes": [
       {
@@ -1384,12 +1384,12 @@ export const PERFUMES = [
       }
     ],
     "accords": [
+      "Creamy",
       "Sweet",
-      "Almond",
+      "Powdery",
       "Rose",
-      "Lactonic",
       "Vanilla",
-      "Woody"
+      "Almond"
     ],
     "image": "/images/products/badee-al-oud-noble-blush.jpg",
     "vendorId": "maureh-vault",

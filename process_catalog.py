@@ -768,12 +768,12 @@ products = [
         'file': 'WhatsApp Image 2026-10-13 at 12.55.24.jpeg',
         'slug': 'badee-al-oud-noble-blush',
         'id': 'mrh-noble-blush',
-        'name': 'Bade\'e Al Oud (Noble Blush)',
+        'name': 'Noble Blush',
         'brand': 'Lattafa',
-        'subtitle': 'Eau de Parfum • Sweet Almond Milk, Candied Rose & Creamy Sandalwood',
+        'subtitle': 'Eau de Parfum • Creamy, Sweet, Powdery',
         'gender': 'Women',
-        'category': 'Arabian Oud',
-        'family': 'Almond Rose Gourmand',
+        'category': 'Women',
+        'family': 'Creamy Sweet Powdery',
         'concentration': 'Eau de Parfum',
         'priceKES': 5400,
         'originalPriceKES': 6200,
@@ -782,23 +782,23 @@ products = [
         'inStock': True,
         'isBestseller': True,
         'isNew': True,
-        'description': 'The newest and most luxurious feminine release in the prestigious Bade\'e Al Oud dynasty. An opulent frosted blush bottle housing sweet almond milk, sugar meringue, delicate Turkish rose, and creamy sandalwood.',
+        'description': 'Noble Blush is an irresistibly creamy, sweet, and powdery fragrance crafted for women. Featuring comforting rose milk, whipped meringue, delicate almond, and cozy vanilla, it offers moderate projection that lasts around 4–7 hours for everyday elegance.',
         'notes': {
             'top': ['Rose Milk', 'Almond', 'Sugar Crystals'],
-            'heart': ['Meringue', 'Turkish Rose', 'Vanilla'],
-            'base': ['Sandalwood', 'White Musk', 'Cedar']
+            'heart': ['Meringue', 'Turkish Rose', 'Powdery Notes'],
+            'base': ['Vanilla', 'Sandalwood', 'White Musk']
         },
         'performance': {
-            'sillage': 'Creamy Luxury Trail',
-            'longevity': '11-13 Hours',
-            'season': 'All-Season Opulence',
-            'occasion': 'Weddings, Luxury Outings, VIP Dinners'
+            'sillage': 'Moderate',
+            'longevity': 'Around 4–7 hours',
+            'season': 'Daily Wear • All-Season Feminine',
+            'occasion': 'Daily Wear, Brunch, Date Night'
         },
         'sizes': [
             {'size': '10ml Decant', 'priceKES': 1150},
             {'size': '100ml Bottle', 'priceKES': 5400, 'isDefault': True}
         ],
-        'accords': ['Sweet', 'Almond', 'Rose', 'Lactonic', 'Vanilla', 'Woody']
+        'accords': ['Creamy', 'Sweet', 'Powdery', 'Rose', 'Vanilla', 'Almond']
     }
 ]
 

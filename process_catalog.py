@@ -734,10 +734,10 @@ products = [
         'id': 'mrh-lattafa-mayar',
         'name': 'Mayar',
         'brand': 'Lattafa',
-        'subtitle': 'Eau de Parfum • Sweet Lychee, White Rose & Sparkling Raspberry',
+        'subtitle': 'Eau de Parfum • Fruity, Floral, Fresh-Sweet',
         'gender': 'Women',
         'category': 'Women',
-        'family': 'Floral Fruity',
+        'family': 'Fruity Floral Fresh-Sweet',
         'concentration': 'Eau de Parfum',
         'priceKES': 4400,
         'originalPriceKES': 5200,
@@ -746,23 +746,23 @@ products = [
         'inStock': True,
         'isBestseller': True,
         'isNew': False,
-        'description': 'A dazzling, mouthwatering bouquet of exotic fruits and fresh floral petals. Sparkling sweet lychee and raspberry open into opulent white rose and velvety peony, ending in a warm amber-vanilla drydown.',
+        'description': 'Mayar is an irresistible fruity, floral, and fresh-sweet fragrance crafted for women. Sparkling sweet lychee and raspberry open into a radiant bouquet of white rose and peony, drying down into soft vanilla and amber with moderate strength that lasts around 5–8 hours.',
         'notes': {
             'top': ['Lychee', 'Raspberry', 'Violet Leaf'],
             'heart': ['White Rose', 'Peony', 'Jasmine'],
             'base': ['Vanilla', 'Amber', 'Musk']
         },
         'performance': {
-            'sillage': 'Long-Lasting & Sparkling',
-            'longevity': '10+ Hours',
+            'sillage': 'Moderate',
+            'longevity': 'Around 5–8 hours',
             'season': 'Warm Weather • Spring & Summer',
-            'occasion': 'Brunch, Celebrations, High Energy Days'
+            'occasion': 'Brunch, Daily Wear, Outings'
         },
         'sizes': [
             {'size': '10ml Decant', 'priceKES': 900},
             {'size': '100ml Bottle', 'priceKES': 4400, 'isDefault': True}
         ],
-        'accords': ['Fruity', 'Rose', 'Sweet', 'Floral', 'Fresh']
+        'accords': ['Fruity', 'Floral', 'Fresh', 'Sweet', 'Rose']
     },
     {
         'file': 'WhatsApp Image 2026-10-13 at 12.55.24.jpeg',

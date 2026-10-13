@@ -1273,10 +1273,10 @@ export const PERFUMES = [
     "id": "mrh-lattafa-mayar",
     "name": "Mayar",
     "brand": "Lattafa",
-    "subtitle": "Eau de Parfum \u2022 Sweet Lychee, White Rose & Sparkling Raspberry",
+    "subtitle": "Eau de Parfum \u2022 Fruity, Floral, Fresh-Sweet",
     "gender": "Women",
     "category": "Women",
-    "family": "Floral Fruity",
+    "family": "Fruity Floral Fresh-Sweet",
     "concentration": "Eau de Parfum",
     "priceKES": 4400,
     "originalPriceKES": 5200,
@@ -1285,7 +1285,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": false,
-    "description": "A dazzling, mouthwatering bouquet of exotic fruits and fresh floral petals. Sparkling sweet lychee and raspberry open into opulent white rose and velvety peony, ending in a warm amber-vanilla drydown.",
+    "description": "Mayar is an irresistible fruity, floral, and fresh-sweet fragrance crafted for women. Sparkling sweet lychee and raspberry open into a radiant bouquet of white rose and peony, drying down into soft vanilla and amber with moderate strength that lasts around 5–8 hours.",
     "notes": {
       "top": [
         "Lychee",
@@ -1304,10 +1304,10 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Long-Lasting & Sparkling",
-      "longevity": "10+ Hours",
+      "sillage": "Moderate",
+      "longevity": "Around 5–8 hours",
       "season": "Warm Weather \u2022 Spring & Summer",
-      "occasion": "Brunch, Celebrations, High Energy Days"
+      "occasion": "Brunch, Daily Wear, Outings"
     },
     "sizes": [
       {
@@ -1322,10 +1322,10 @@ export const PERFUMES = [
     ],
     "accords": [
       "Fruity",
-      "Rose",
-      "Sweet",
       "Floral",
-      "Fresh"
+      "Fresh",
+      "Sweet",
+      "Rose"
     ],
     "image": "/images/products/lattafa-mayar-pink.jpg",
     "vendorId": "maureh-vault",

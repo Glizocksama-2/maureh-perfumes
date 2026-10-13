@@ -960,10 +960,10 @@ export const PERFUMES = [
     "id": "mrh-mousuf",
     "name": "Mousuf",
     "brand": "Ard Al Zaafaran",
-    "subtitle": "Eau de Parfum \u2022 Chocolaty Grapes, Warm Caramel & Velvet Oud",
+    "subtitle": "Eau de Parfum \u2022 Sweet, Fruity, Rich",
     "gender": "Unisex",
-    "category": "Arabian Oud",
-    "family": "Gourmand Woody",
+    "category": "Unisex",
+    "family": "Sweet Fruity Rich",
     "concentration": "Eau de Parfum",
     "priceKES": 3200,
     "originalPriceKES": 3800,
@@ -972,7 +972,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": false,
-    "description": "Housed in its iconic burlap pouch presentation, Mousuf is an unforgettable Middle Eastern specialty. Delicious sweet purple grapes, milk chocolate, and gooey caramel melt over soft agarwood and musk.",
+    "description": "Mousuf is a sweet, fruity, and rich Arabic fragrance from Ard Al Zaafaran. Luscious grapes, milk chocolate, and caramel unfold over soft oud and musk, creating an indulgent Middle Eastern classic. Gender depends on the version — this one works beautifully on all. Moderate-strong projection lasting around 5–9 hours.",
     "notes": {
       "top": [
         "Fresh Grapes",
@@ -989,10 +989,10 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Sweet Seductive Sillage",
-      "longevity": "8-10 Hours",
-      "season": "Cool Evenings \u2022 Casual",
-      "occasion": "Comfort Wear, Daily Luxury, Cultural Events"
+      "sillage": "Moderate–Strong",
+      "longevity": "Around 5–9 hours",
+      "season": "Cool Evenings \u2022 All-Season",
+      "occasion": "Daily Luxury, Comfort Wear, Cultural Events"
     },
     "sizes": [
       {
@@ -1008,8 +1008,8 @@ export const PERFUMES = [
     "accords": [
       "Sweet",
       "Fruity",
+      "Rich",
       "Caramel",
-      "Chocolate",
       "Oud"
     ],
     "image": "/images/products/ard-al-zaafaran-mousuf.jpg",
@@ -1019,12 +1019,12 @@ export const PERFUMES = [
   {
     "slug": "ramz-lattafa-gold",
     "id": "mrh-ramz-gold",
-    "name": "Ramz Lattafa (Gold)",
+    "name": "Ramz Gold",
     "brand": "Lattafa",
-    "subtitle": "Eau de Parfum \u2022 Golden Apple, White Peach & Sandalwood",
-    "gender": "Women",
-    "category": "Women",
-    "family": "Sweet Fruity Oriental",
+    "subtitle": "Eau de Parfum \u2022 Sweet, Fruity, Warm Amber",
+    "gender": "Unisex",
+    "category": "Unisex",
+    "family": "Sweet Fruity Warm Amber",
     "concentration": "Eau de Parfum",
     "priceKES": 3500,
     "originalPriceKES": 4200,
@@ -1033,7 +1033,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": false,
     "isNew": false,
-    "description": "A radiant, joyful fragrance with sun-drenched golden fruits. Ripe sweet apples, velvety peach, and pineapple intertwine with pure jasmine and silky creamy sandalwood.",
+    "description": "Ramz Gold is a sweet, fruity, and warm amber fragrance that works beautifully across genders. Sun-ripened apple, peach, and sweet orange open into jasmine and rose before settling into a rich amber and vanilla base. Moderate-strong projection lasting around 6–9 hours.",
     "notes": {
       "top": [
         "Apple",
@@ -1054,10 +1054,10 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Moderate & Uplifting",
-      "longevity": "8+ Hours",
-      "season": "Spring \u2022 Summer \u2022 Sunny Days",
-      "occasion": "Daily Radiance, Office, Social Brunches"
+      "sillage": "Moderate–Strong",
+      "longevity": "Around 6–9 hours",
+      "season": "Spring \u2022 Summer \u2022 All-Season",
+      "occasion": "Daily Wear, Office, Social Occasions"
     },
     "sizes": [
       {
@@ -1071,10 +1071,10 @@ export const PERFUMES = [
       }
     ],
     "accords": [
-      "Fruity",
       "Sweet",
-      "Powdery",
-      "Woody",
+      "Fruity",
+      "Warm Amber",
+      "Vanilla",
       "Musky"
     ],
     "image": "/images/products/ramz-lattafa-gold.jpg",
@@ -1084,12 +1084,12 @@ export const PERFUMES = [
   {
     "slug": "lattafa-yara-pink",
     "id": "mrh-lattafa-yara",
-    "name": "Yara (Pink)",
+    "name": "Yara (Original)",
     "brand": "Lattafa",
-    "subtitle": "Eau de Parfum \u2022 Strawberry Milkshake, Heliotrope & Vanilla Fluff",
+    "subtitle": "Eau de Parfum \u2022 Creamy, Soft, Tropical-Sweet",
     "gender": "Women",
     "category": "Women",
-    "family": "Tropical Gourmand Fluffy",
+    "family": "Creamy Soft Tropical-Sweet",
     "concentration": "Eau de Parfum",
     "priceKES": 3900,
     "originalPriceKES": 4600,
@@ -1098,7 +1098,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": false,
-    "description": "The viral sensation adored by millions of women across East Africa. Smells like a dreamy strawberry milkshake, fluffy vanilla marshmallow, and tropical orchid flowers. Irresistibly soft, cuddly, and compliment-inducing.",
+    "description": "Yara (Original) is an iconic, creamy, soft, and tropical-sweet fragrance created for women. Opens with vibrant tropical fruit and heliotrope before settling into fluffy vanilla, marshmallow, and warm sandalwood with moderate strength that lasts around 5–8 hours.",
     "notes": {
       "top": [
         "Heliotrope",
@@ -1116,10 +1116,10 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Alluring Soft Cloud",
-      "longevity": "9-11 Hours",
+      "sillage": "Moderate",
+      "longevity": "Around 5–8 hours",
       "season": "All-Season Feminine",
-      "occasion": "Everyday Signature, Dates, Campus, Self-Care"
+      "occasion": "Everyday Signature, Dates, Casual Chic"
     },
     "sizes": [
       {
@@ -1133,11 +1133,11 @@ export const PERFUMES = [
       }
     ],
     "accords": [
-      "Sweet",
-      "Vanilla",
+      "Creamy",
+      "Soft",
       "Tropical",
-      "Powdery",
-      "Lactonic"
+      "Sweet",
+      "Vanilla"
     ],
     "image": "/images/products/lattafa-yara-pink.jpg",
     "vendorId": "maureh-vault",

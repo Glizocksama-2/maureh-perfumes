@@ -554,10 +554,10 @@ products = [
         'id': 'mrh-mousuf',
         'name': 'Mousuf',
         'brand': 'Ard Al Zaafaran',
-        'subtitle': 'Eau de Parfum • Chocolaty Grapes, Warm Caramel & Velvet Oud',
+        'subtitle': 'Eau de Parfum • Sweet, Fruity, Rich',
         'gender': 'Unisex',
-        'category': 'Arabian Oud',
-        'family': 'Gourmand Woody',
+        'category': 'Unisex',
+        'family': 'Sweet Fruity Rich',
         'concentration': 'Eau de Parfum',
         'priceKES': 3200,
         'originalPriceKES': 3800,
@@ -566,34 +566,34 @@ products = [
         'inStock': True,
         'isBestseller': True,
         'isNew': False,
-        'description': 'Housed in its iconic burlap pouch presentation, Mousuf is an unforgettable Middle Eastern specialty. Delicious sweet purple grapes, milk chocolate, and gooey caramel melt over soft agarwood and musk.',
+        'description': 'Mousuf is a sweet, fruity, and rich Arabic fragrance from Ard Al Zaafaran. Luscious grapes, milk chocolate, and caramel unfold over soft oud and musk, creating an indulgent Middle Eastern classic. Gender depends on the version — this one works beautifully on all. Moderate-strong projection lasting around 5–9 hours.',
         'notes': {
             'top': ['Fresh Grapes', 'Chocolate Accord'],
             'heart': ['Caramel', 'Floral Notes'],
             'base': ['Oud', 'Musk', 'Sandalwood']
         },
         'performance': {
-            'sillage': 'Sweet Seductive Sillage',
-            'longevity': '8-10 Hours',
-            'season': 'Cool Evenings • Casual',
-            'occasion': 'Comfort Wear, Daily Luxury, Cultural Events'
+            'sillage': 'Moderate–Strong',
+            'longevity': 'Around 5–9 hours',
+            'season': 'Cool Evenings • All-Season',
+            'occasion': 'Daily Luxury, Comfort Wear, Cultural Events'
         },
         'sizes': [
             {'size': '10ml Decant', 'priceKES': 700},
             {'size': '100ml Bottle', 'priceKES': 3200, 'isDefault': True}
         ],
-        'accords': ['Sweet', 'Fruity', 'Caramel', 'Chocolate', 'Oud']
+        'accords': ['Sweet', 'Fruity', 'Rich', 'Caramel', 'Oud']
     },
     {
         'file': 'WhatsApp Image 2026-10-13 at 12.51.59.jpeg',
         'slug': 'ramz-lattafa-gold',
         'id': 'mrh-ramz-gold',
-        'name': 'Ramz Lattafa (Gold)',
+        'name': 'Ramz Gold',
         'brand': 'Lattafa',
-        'subtitle': 'Eau de Parfum • Golden Apple, White Peach & Sandalwood',
-        'gender': 'Women',
-        'category': 'Women',
-        'family': 'Sweet Fruity Oriental',
+        'subtitle': 'Eau de Parfum • Sweet, Fruity, Warm Amber',
+        'gender': 'Unisex',
+        'category': 'Unisex',
+        'family': 'Sweet Fruity Warm Amber',
         'concentration': 'Eau de Parfum',
         'priceKES': 3500,
         'originalPriceKES': 4200,
@@ -602,34 +602,34 @@ products = [
         'inStock': True,
         'isBestseller': False,
         'isNew': False,
-        'description': 'A radiant, joyful fragrance with sun-drenched golden fruits. Ripe sweet apples, velvety peach, and pineapple intertwine with pure jasmine and silky creamy sandalwood.',
+        'description': 'Ramz Gold is a sweet, fruity, and warm amber fragrance that works beautifully across genders. Sun-ripened apple, peach, and sweet orange open into jasmine and rose before settling into a rich amber and vanilla base. Moderate-strong projection lasting around 6–9 hours.',
         'notes': {
             'top': ['Apple', 'Peach', 'Pear', 'Sweet Orange'],
             'heart': ['Jasmine', 'Rose', 'Sandalwood'],
             'base': ['White Musk', 'Vanilla', 'Amber', 'Patchouli']
         },
         'performance': {
-            'sillage': 'Moderate & Uplifting',
-            'longevity': '8+ Hours',
-            'season': 'Spring • Summer • Sunny Days',
-            'occasion': 'Daily Radiance, Office, Social Brunches'
+            'sillage': 'Moderate–Strong',
+            'longevity': 'Around 6–9 hours',
+            'season': 'Spring • Summer • All-Season',
+            'occasion': 'Daily Wear, Office, Social Occasions'
         },
         'sizes': [
             {'size': '10ml Decant', 'priceKES': 750},
             {'size': '100ml Bottle', 'priceKES': 3500, 'isDefault': True}
         ],
-        'accords': ['Fruity', 'Sweet', 'Powdery', 'Woody', 'Musky']
+        'accords': ['Sweet', 'Fruity', 'Warm Amber', 'Vanilla', 'Musky']
     },
     {
         'file': 'WhatsApp Image 2026-10-13 at 12.52.41.jpeg',
         'slug': 'lattafa-yara-pink',
         'id': 'mrh-lattafa-yara',
-        'name': 'Yara (Pink)',
+        'name': 'Yara (Original)',
         'brand': 'Lattafa',
-        'subtitle': 'Eau de Parfum • Strawberry Milkshake, Heliotrope & Vanilla Fluff',
+        'subtitle': 'Eau de Parfum • Creamy, Soft, Tropical-Sweet',
         'gender': 'Women',
         'category': 'Women',
-        'family': 'Tropical Gourmand Fluffy',
+        'family': 'Creamy Soft Tropical-Sweet',
         'concentration': 'Eau de Parfum',
         'priceKES': 3900,
         'originalPriceKES': 4600,
@@ -638,23 +638,23 @@ products = [
         'inStock': True,
         'isBestseller': True,
         'isNew': False,
-        'description': 'The viral sensation adored by millions of women across East Africa. Smells like a dreamy strawberry milkshake, fluffy vanilla marshmallow, and tropical orchid flowers. Irresistibly soft, cuddly, and compliment-inducing.',
+        'description': 'Yara (Original) is an iconic, creamy, soft, and tropical-sweet fragrance created for women. Opens with vibrant tropical fruit and heliotrope before settling into fluffy vanilla, marshmallow, and warm sandalwood with moderate strength that lasts around 5–8 hours.',
         'notes': {
             'top': ['Heliotrope', 'Orchid', 'Tangerine'],
             'heart': ['Gourmand Accord', 'Tropical Fruits'],
             'base': ['Vanilla', 'Sandalwood', 'Musk']
         },
         'performance': {
-            'sillage': 'Alluring Soft Cloud',
-            'longevity': '9-11 Hours',
+            'sillage': 'Moderate',
+            'longevity': 'Around 5–8 hours',
             'season': 'All-Season Feminine',
-            'occasion': 'Everyday Signature, Dates, Campus, Self-Care'
+            'occasion': 'Everyday Signature, Dates, Casual Chic'
         },
         'sizes': [
             {'size': '10ml Decant', 'priceKES': 800},
             {'size': '100ml Bottle', 'priceKES': 3900, 'isDefault': True}
         ],
-        'accords': ['Sweet', 'Vanilla', 'Tropical', 'Powdery', 'Lactonic']
+        'accords': ['Creamy', 'Soft', 'Tropical', 'Sweet', 'Vanilla']
     },
     {
         'file': 'WhatsApp Image 2026-10-13 at 12.53.09.jpeg',

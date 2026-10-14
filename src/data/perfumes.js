@@ -4,10 +4,10 @@ export const PERFUMES = [
     "id": "mrh-afnan-9pm",
     "name": "9 PM",
     "brand": "Afnan",
-    "subtitle": "Eau de Parfum \u2022 Bubblegum, Crisp Apple & Warm Vanilla",
+    "subtitle": "Eau de Parfum \u2022 Oriental, Sweet \u0026 Fruity",
     "gender": "Men",
     "category": "Men",
-    "family": "Amber Vanilla",
+    "family": "Oriental Sweet Fruity",
     "concentration": "Eau de Parfum",
     "priceKES": 4800,
     "originalPriceKES": 5500,
@@ -16,7 +16,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": false,
-    "description": "The viral sensation and King of evening fragrances. Opens with fresh wild apple, cinnamon, and bergamot before settling into luscious vanilla, tonka bean, and warm amber. Unstoppable sillage and compliment factor.",
+    "description": "9 PM by Afnan is a rich oriental fragrance for men. Sweet, fruity, and warm — apple and cinnamon open into orange blossom and lily of the valley, settling into a base of vanilla, tonka bean, and amber. Strong projection lasting around 6–10 hours.",
     "notes": {
       "top": [
         "Apple",
@@ -36,9 +36,9 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Enormous Projection",
-      "longevity": "10-12 Hours",
-      "season": "Evening \u2022 Date Night \u2022 Clubbing",
+      "sillage": "Strong",
+      "longevity": "Around 6–10 hours",
+      "season": "Evening \u2022 Date Night \u2022 All-Season",
       "occasion": "Parties, Evenings, Casual Luxury"
     },
     "sizes": [
@@ -53,10 +53,10 @@ export const PERFUMES = [
       }
     ],
     "accords": [
-      "Vanilla",
       "Sweet",
       "Fruity",
-      "Warm Spicy",
+      "Oriental",
+      "Vanilla",
       "Amber"
     ],
     "image": "/images/products/afnan-9pm.jpg",
@@ -68,19 +68,19 @@ export const PERFUMES = [
     "id": "mrh-lattafa-eclaire",
     "name": "Eclaire",
     "brand": "Lattafa",
-    "subtitle": "Eau de Parfum \u2022 Creamy Caramel, Milk & Golden Honey",
+    "subtitle": "Eau de Parfum \u2022 Sweet Gourmand, Creamy \u0026 Vanilla-Like",
     "gender": "Women",
     "category": "Women",
-    "family": "Gourmand Sweet",
+    "family": "Sweet Gourmand",
     "concentration": "Eau de Parfum",
-    "priceKES": 5200,
-    "originalPriceKES": 6000,
+    "priceKES": 3500,
+    "originalPriceKES": 4200,
     "rating": 4.97,
     "reviewsCount": 380,
     "inStock": true,
     "isBestseller": true,
     "isNew": true,
-    "description": "A heavenly dessert in a bottle and worldwide TikTok sensation. Dripping with warm golden caramel, condensed milk, sweet praline, and fluffy Madagascar vanilla. Indulgently sweet, comforting, and addictive.",
+    "description": "Eclaire by Lattafa is a sweet gourmand fragrance — creamy, sugary, and vanilla-like. Marketed for women but wearable by anyone who loves rich, dessert-inspired scents. Rich and noticeable projection lasting about 4–8 hours.",
     "notes": {
       "top": [
         "Caramel",
@@ -98,28 +98,28 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Intimate & Tempting Radiance",
-      "longevity": "10+ Hours",
+      "sillage": "Rich \u0026 Noticeable",
+      "longevity": "About 4–8 hours",
       "season": "All-Season \u2022 Cooler Days",
       "occasion": "Daily Indulgence, Romance, Cozy Evenings"
     },
     "sizes": [
       {
         "size": "10ml Decant",
-        "priceKES": 1100
+        "priceKES": 700
       },
       {
         "size": "100ml Bottle",
-        "priceKES": 5200,
+        "priceKES": 3500,
         "isDefault": true
       }
     ],
     "accords": [
-      "Caramel",
       "Sweet",
       "Vanilla",
-      "Lactonic",
-      "Honey"
+      "Caramel",
+      "Creamy",
+      "Gourmand"
     ],
     "image": "/images/products/lattafa-eclaire.jpg",
     "vendorId": "maureh-vault",
@@ -195,19 +195,19 @@ export const PERFUMES = [
     "id": "mrh-lattafa-khamrah",
     "name": "Khamrah",
     "brand": "Lattafa",
-    "subtitle": "Eau de Parfum \u2022 Sweet Dates, Cinnamon Bark & Boozy Praline",
+    "subtitle": "Eau de Parfum \u2022 Cinnamon, Dates, Vanilla \u0026 Warm Spices",
     "gender": "Unisex",
     "category": "Unisex",
     "family": "Warm Gourmand Amber",
     "concentration": "Eau de Parfum",
-    "priceKES": 5500,
-    "originalPriceKES": 6500,
+    "priceKES": 4500,
+    "originalPriceKES": 5500,
     "rating": 4.98,
     "reviewsCount": 890,
     "inStock": true,
     "isBestseller": true,
     "isNew": false,
-    "description": "One of the most celebrated fragrances in modern perfumery. Encased in a cut-crystal flacon, it unfolds with warm cinnamon, nutmeg, sweet medjool dates, praline, and creamy vanilla-myrrh. Liquid gold on skin.",
+    "description": "Khamrah by Lattafa is a beloved unisex fragrance built on cinnamon, sweet medjool dates, vanilla, and warm spices. One of the most celebrated modern Arabic perfumes. Strong, enveloping presence lasting around 7–12+ hours.",
     "notes": {
       "top": [
         "Cinnamon",
@@ -230,27 +230,27 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Powerhouse Sillage",
-      "longevity": "12-14 Hours",
+      "sillage": "Strong",
+      "longevity": "Around 7–12+ hours",
       "season": "Cool Evenings \u2022 Special Events",
       "occasion": "Celebrations, Dinners, Luxury Signatures"
     },
     "sizes": [
       {
         "size": "10ml Decant",
-        "priceKES": 1150
+        "priceKES": 950
       },
       {
         "size": "100ml Bottle",
-        "priceKES": 5500,
+        "priceKES": 4500,
         "isDefault": true
       }
     ],
     "accords": [
-      "Warm Spicy",
-      "Sweet",
-      "Vanilla",
       "Cinnamon",
+      "Dates",
+      "Vanilla",
+      "Warm Spicy",
       "Amber"
     ],
     "image": "/images/products/lattafa-khamrah.jpg",
@@ -260,12 +260,12 @@ export const PERFUMES = [
   {
     "slug": "ramz-lattafa-silver",
     "id": "mrh-ramz-silver",
-    "name": "Ramz Lattafa (Silver)",
+    "name": "Ramz Silver",
     "brand": "Lattafa",
-    "subtitle": "Eau de Parfum \u2022 Sweet Pear, Mint Crisp & Smooth Vanilla",
+    "subtitle": "Eau de Parfum \u2022 Sweet, Fresh, Fruity \u0026 Vanilla",
     "gender": "Men",
     "category": "Men",
-    "family": "Fruity Amber",
+    "family": "Sweet Fresh Fruity",
     "concentration": "Eau de Parfum",
     "priceKES": 3500,
     "originalPriceKES": 4200,
@@ -274,7 +274,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": false,
     "isNew": false,
-    "description": "An energetic, magnetic scent inspired by youthful luxury. Crisp pear and refreshing mint blend seamlessly into aromatic cardamom, lavender, and a sensual base of vanilla and amber.",
+    "description": "Ramz Silver by Lattafa is a sweet, fresh, and fruity masculine-leaning fragrance with a smooth vanilla heart. Crisp pear, refreshing mint, and bergamot open into aromatic cardamom before a warm vanilla and amber base. Strong projection lasting around 6–9 hours.",
     "notes": {
       "top": [
         "Pear",
@@ -294,8 +294,8 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Strong & Playful",
-      "longevity": "8-10 Hours",
+      "sillage": "Strong",
+      "longevity": "Around 6–9 hours",
       "season": "Versatile All-Year",
       "occasion": "Daily Wear, Casual Hangouts, Evening"
     },
@@ -312,10 +312,10 @@ export const PERFUMES = [
     ],
     "accords": [
       "Sweet",
+      "Fresh",
       "Fruity",
       "Vanilla",
-      "Aromatic",
-      "Warm Spicy"
+      "Aromatic"
     ],
     "image": "/images/products/ramz-lattafa-silver.jpg",
     "vendorId": "maureh-vault",
@@ -326,10 +326,10 @@ export const PERFUMES = [
     "id": "mrh-qissa-delicious",
     "name": "Qissa Delicious",
     "brand": "Paris Corner",
-    "subtitle": "Eau de Parfum \u2022 Whipped Cream, Dark Chocolate & Orange Blossom",
-    "gender": "Women",
-    "category": "Women",
-    "family": "Gourmand Floral",
+    "subtitle": "Eau de Parfum \u2022 Warm, Sweet \u0026 Rich",
+    "gender": "Unisex",
+    "category": "Unisex",
+    "family": "Warm Sweet Gourmand",
     "concentration": "Eau de Parfum",
     "priceKES": 4800,
     "originalPriceKES": 5600,
@@ -338,7 +338,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": true,
-    "description": "A mouth-watering indulgence housed in a majestic ribbed bronze flacon. Layers of rich cocoa, whipped marshmallow cream, juicy orange, and toasted almonds melt into velvety vanilla musk.",
+    "description": "Qissa Delicious (the brown/darker Qissa) is a warm, sweet, and rich gourmand fragrance. Cocoa, caramel, and dark chocolate open into coconut and marshmallow with a vanilla musk base. Moderate-strong projection — longevity varies with skin and conditions.",
     "notes": {
       "top": [
         "Dark Chocolate",
@@ -359,8 +359,8 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Sweet Seductive Trail",
-      "longevity": "9-11 Hours",
+      "sillage": "Moderate–Strong",
+      "longevity": "Varies by Skin \u0026 Conditions",
       "season": "All-Season \u2022 Date Nights",
       "occasion": "Social Outings, Dates, Gourmand Lovers"
     },
@@ -376,11 +376,11 @@ export const PERFUMES = [
       }
     ],
     "accords": [
-      "Chocolate",
+      "Warm",
       "Sweet",
-      "Vanilla",
-      "Cacao",
-      "Warm"
+      "Rich",
+      "Chocolate",
+      "Vanilla"
     ],
     "image": "/images/products/qissa-delicious.jpg",
     "vendorId": "maureh-vault",
@@ -391,9 +391,9 @@ export const PERFUMES = [
     "id": "mrh-mfk-br540",
     "name": "Baccarat Rouge 540",
     "brand": "Maison Francis Kurkdjian",
-    "subtitle": "Eau de Parfum \u2022 French Haute Parfumerie Masterpiece",
+    "subtitle": "Eau de Parfum \u2022 Airy Amber, Sweet Saffron \u0026 Woody",
     "gender": "Unisex",
-    "category": "Niche & Haute",
+    "category": "Unisex",
     "family": "Amber Floral Woody",
     "concentration": "Eau de Parfum",
     "priceKES": 42000,
@@ -403,7 +403,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": false,
-    "description": "The benchmark of modern luxury perfumery. Luminous aerial notes of jasmine and golden saffron halo mineral facets of ambergris and fresh-cut cedarwood. Unmistakable, mesmerizing, and supremely prestigious.",
+    "description": "Baccarat Rouge 540 is the benchmark of modern luxury perfumery. Airy amber, sweet saffron, and woody notes create an unmistakable mineral-sweet halo. Unisex and universally admired. Strong projection lasting around 8–12+ hours.",
     "notes": {
       "top": [
         "Grandiflorum Jasmine",
@@ -420,8 +420,8 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Ethereal Infinite Sillage",
-      "longevity": "16+ Hours",
+      "sillage": "Strong",
+      "longevity": "Around 8–12+ hours",
       "season": "All-Season High Luxury",
       "occasion": "Gala Receptions, Executive Presence, Signature Scent"
     },
@@ -437,10 +437,10 @@ export const PERFUMES = [
       }
     ],
     "accords": [
-      "Woody",
       "Amber",
-      "Warm Spicy",
-      "Fresh Spicy",
+      "Sweet Saffron",
+      "Woody",
+      "Floral",
       "Metallic"
     ],
     "image": "/images/products/baccarat-rouge-540.jpg",
@@ -452,7 +452,7 @@ export const PERFUMES = [
     "id": "mrh-elysia-elegance",
     "name": "Elysia Elegance",
     "brand": "Fragrance World",
-    "subtitle": "Eau de Parfum \u2022 Royal Lychee, Peony Blossom & Cashmeran",
+    "subtitle": "Eau de Parfum \u2022 Floral Fruity \u2022 Varies by Version",
     "gender": "Women",
     "category": "Women",
     "family": "Floral Fruity",
@@ -464,7 +464,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": false,
     "isNew": true,
-    "description": "An exquisite tribute to modern femininity. Shimmering Turkish rose and velvet peonies are enlivened by crisp lychee, tart rhubarb, and cozy cashmeran with clean white musk.",
+    "description": "Elysia Elegance by Fragrance World is a floral fruity fragrance. Note that several perfumes carry the Elysia name — scent profile and strength vary by the exact version. This bottle features shimmering rose and peony with crisp lychee and cozy cashmeran musk.",
     "notes": {
       "top": [
         "Lychee",
@@ -486,8 +486,8 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Elegant Radiant Aura",
-      "longevity": "8-10 Hours",
+      "sillage": "Varies by Version",
+      "longevity": "Varies by Version",
       "season": "Spring \u2022 Summer \u2022 Daytime",
       "occasion": "Brunch, Weddings, Office Elegance"
     },
@@ -516,12 +516,12 @@ export const PERFUMES = [
   {
     "slug": "lattafa-hayaati",
     "id": "mrh-lattafa-hayaati",
-    "name": "Hayaati (Black)",
+    "name": "Hayaati",
     "brand": "Lattafa",
-    "subtitle": "Eau de Parfum \u2022 Crisp Green Apple, Spiced Woods & Marine Freshness",
-    "gender": "Men",
-    "category": "Men",
-    "family": "Woody Aromatic",
+    "subtitle": "Eau de Parfum \u2022 Scent Varies by Version",
+    "gender": "Unisex",
+    "category": "Unisex",
+    "family": "Varies by Version",
     "concentration": "Eau de Parfum",
     "priceKES": 3400,
     "originalPriceKES": 4000,
@@ -530,7 +530,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": false,
-    "description": "A crowd-pleasing champion with phenomenal everyday versatility. Crisp green apple and bergamot meet warm cinnamon and woody amber for a fresh, confident masculine aura that lasts all day.",
+    "description": "Hayaati by Lattafa comes in multiple versions — the exact scent profile depends on the bottle. Message us to confirm which version is available. Generally features fresh and woody notes with warm accords. Gender and strength vary by version.",
     "notes": {
       "top": [
         "Apple",
@@ -546,8 +546,8 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Moderate to Strong",
-      "longevity": "8-10 Hours",
+      "sillage": "Varies by Version",
+      "longevity": "Varies by Version",
       "season": "All-Year Versatile",
       "occasion": "Workplace, Gym, Daily Signature"
     },
@@ -576,12 +576,12 @@ export const PERFUMES = [
   {
     "slug": "armaf-uniq-effects",
     "id": "mrh-armaf-uniq",
-    "name": "Effects of \u00daniq",
+    "name": "Armaf Uniq",
     "brand": "Armaf",
-    "subtitle": "Eau de Parfum \u2022 Royal Saffron, Crimson Rose & Smoked Amber",
+    "subtitle": "Eau de Parfum \u2022 Scent Varies by the Exact Uniq Version",
     "gender": "Unisex",
-    "category": "Arabian Oud",
-    "family": "Oriental Spicy",
+    "category": "Unisex",
+    "family": "Varies by Version",
     "concentration": "Eau de Parfum",
     "priceKES": 6800,
     "originalPriceKES": 7800,
@@ -590,7 +590,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": false,
     "isNew": true,
-    "description": "A luxury statement release from Armaf\u2019s prestigious \u00daniq private collection. Housed in an embossed crimson flacon with gold trimming, it delivers opulent saffron, velvety damask rose, and smoldering amber.",
+    "description": "Armaf Uniq comes in multiple versions — the exact scent varies by bottle. Gender and longevity also depend on the specific version. Moderate-strong projection overall. Contact us to confirm which version is in stock.",
     "notes": {
       "top": [
         "Saffron",
@@ -610,8 +610,8 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Heavy & Refined",
-      "longevity": "12+ Hours",
+      "sillage": "Moderate–Strong",
+      "longevity": "Varies by Version",
       "season": "Evening \u2022 Formal Nights",
       "occasion": "Bespoke Gatherings, Gala Events"
     },
@@ -627,11 +627,11 @@ export const PERFUMES = [
       }
     ],
     "accords": [
-      "Warm Spicy",
-      "Rose",
+      "Oriental",
       "Amber",
+      "Warm Spicy",
       "Woody",
-      "Balsamic"
+      "Rose"
     ],
     "image": "/images/products/armaf-uniq-effects.jpg",
     "vendorId": "maureh-vault",
@@ -705,10 +705,10 @@ export const PERFUMES = [
     "id": "mrh-odyssey-aqua",
     "name": "Odyssey Aqua",
     "brand": "Armaf",
-    "subtitle": "Eau de Parfum \u2022 Coastal Breeze, Crisp Mint & Ambroxan",
+    "subtitle": "Eau de Parfum \u2022 Fresh, Aromatic \u0026 Woody",
     "gender": "Men",
     "category": "Men",
-    "family": "Fresh Aquatic Aromatic",
+    "family": "Fresh Aromatic Woody",
     "concentration": "Eau de Parfum",
     "priceKES": 4400,
     "originalPriceKES": 5000,
@@ -717,7 +717,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": false,
     "isNew": false,
-    "description": "The ultimate high-energy fresh aquatic for Nairobi\u2019s sunny days. Zesty grapefruit, wild mint, and marine chords ride on an addictive base of Ambroxan and earthy cypress wood.",
+    "description": "Armaf Odyssey Aqua (also known as Odyssey Green) is a fresh, aromatic, and woody masculine-leaning fragrance. Zesty citrus and mint open into aromatic lavender and marine notes, settling into an earthy woody base. Moderate-strong projection lasting around 5–9 hours.",
     "notes": {
       "top": [
         "Grapefruit",
@@ -736,8 +736,8 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Invigorating Projection",
-      "longevity": "8-10 Hours",
+      "sillage": "Moderate–Strong",
+      "longevity": "Around 5–9 hours",
       "season": "Warm Days \u2022 Active Lifestyles",
       "occasion": "Gym, Office, Casual Weekends, Sports"
     },
@@ -753,11 +753,11 @@ export const PERFUMES = [
       }
     ],
     "accords": [
-      "Aquatic",
-      "Citrus",
-      "Fresh Spicy",
+      "Fresh",
       "Aromatic",
-      "Amber"
+      "Woody",
+      "Aquatic",
+      "Citrus"
     ],
     "image": "/images/products/armaf-odyssey-aqua.jpg",
     "vendorId": "maureh-vault",
@@ -768,10 +768,10 @@ export const PERFUMES = [
     "id": "mrh-odyssey-homme",
     "name": "Odyssey Homme",
     "brand": "Armaf",
-    "subtitle": "Eau de Parfum \u2022 Iris Powder, Dark Amber & Vanilla Leather",
+    "subtitle": "Eau de Parfum \u2022 Warm, Spicy \u0026 Woody-Sweet",
     "gender": "Men",
     "category": "Men",
-    "family": "Oriental Woody",
+    "family": "Warm Spicy Woody",
     "concentration": "Eau de Parfum",
     "priceKES": 4400,
     "originalPriceKES": 5000,
@@ -780,7 +780,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": false,
-    "description": "A dark, seductive winter powerhouse reminiscent of Tom Ford Noir Extreme and Dior Homme. Creamy vanilla, powdery iris, dark spices, and smooth amber create an irresistible aura of masculine sophistication.",
+    "description": "Armaf Odyssey Homme (also known as Odyssey Black) is a warm, spicy, and woody-sweet masculine fragrance. Dark spices and amber open into iris and oriental accords, settling into a creamy vanilla-leather base. Strong projection lasting around 6–10 hours.",
     "notes": {
       "top": [
         "Amber",
@@ -798,8 +798,8 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Cozy Strong Trail",
-      "longevity": "10+ Hours",
+      "sillage": "Strong",
+      "longevity": "Around 6–10 hours",
       "season": "Cool Evenings \u2022 Formal Events",
       "occasion": "Executive Meetings, Romantic Dates, Night Out"
     },
@@ -815,11 +815,11 @@ export const PERFUMES = [
       }
     ],
     "accords": [
-      "Vanilla",
-      "Amber",
-      "Iris",
-      "Powdery",
-      "Warm Spicy"
+      "Warm",
+      "Spicy",
+      "Woody",
+      "Sweet",
+      "Amber"
     ],
     "image": "/images/products/armaf-odyssey-homme.jpg",
     "vendorId": "maureh-vault",

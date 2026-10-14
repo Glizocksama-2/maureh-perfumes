@@ -895,10 +895,10 @@ export const PERFUMES = [
     "id": "mrh-lattafa-asad",
     "name": "Asad",
     "brand": "Lattafa",
-    "subtitle": "Eau de Parfum \u2022 Cracked Black Pepper, Dark Tobacco & Roasted Coffee",
+    "subtitle": "Eau de Parfum \u2022 Spicy, Amber, Warm \u0026 Slightly Vanilla-Like",
     "gender": "Men",
     "category": "Men",
-    "family": "Warm Spicy Amber",
+    "family": "Spicy Warm Amber",
     "concentration": "Eau de Parfum",
     "priceKES": 3800,
     "originalPriceKES": 4600,
@@ -907,7 +907,7 @@ export const PERFUMES = [
     "inStock": true,
     "isBestseller": true,
     "isNew": false,
-    "description": "The undisputed king of spicy masculine perfumery. Fiery black pepper, sweet pineapple, dark tobacco, roasted coffee beans, and balsamic amber create an intoxicating, commanding aura inspired by Sauvage Elixir.",
+    "description": "Asad is a bold, masculine-leaning fragrance built for those who command attention. Fiery black pepper and tobacco open strong, giving way to roasted coffee and patchouli, before settling into a rich amber and vanilla base. Strong projection that lasts around 7–10+ hours.",
     "notes": {
       "top": [
         "Black Pepper",
@@ -928,10 +928,10 @@ export const PERFUMES = [
       ]
     },
     "performance": {
-      "sillage": "Dominant Room Presence",
-      "longevity": "12+ Hours",
+      "sillage": "Strong",
+      "longevity": "Around 7–10+ hours",
       "season": "Evening \u2022 Cold Days \u2022 Night Out",
-      "occasion": "Leadership, Night Events, Signature Winter"
+      "occasion": "Night Events, Date Night, Bold Daily Wear"
     },
     "sizes": [
       {
@@ -945,10 +945,10 @@ export const PERFUMES = [
       }
     ],
     "accords": [
-      "Warm Spicy",
+      "Spicy",
       "Amber",
-      "Coffee",
-      "Tobacco",
+      "Warm",
+      "Vanilla",
       "Woody"
     ],
     "image": "/images/products/lattafa-asad.jpg",

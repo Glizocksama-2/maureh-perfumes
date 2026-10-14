@@ -518,10 +518,10 @@ products = [
         'id': 'mrh-lattafa-asad',
         'name': 'Asad',
         'brand': 'Lattafa',
-        'subtitle': 'Eau de Parfum • Cracked Black Pepper, Dark Tobacco & Roasted Coffee',
+        'subtitle': 'Eau de Parfum • Spicy, Amber, Warm & Slightly Vanilla-Like',
         'gender': 'Men',
         'category': 'Men',
-        'family': 'Warm Spicy Amber',
+        'family': 'Spicy Warm Amber',
         'concentration': 'Eau de Parfum',
         'priceKES': 3800,
         'originalPriceKES': 4600,
@@ -530,23 +530,23 @@ products = [
         'inStock': True,
         'isBestseller': True,
         'isNew': False,
-        'description': 'The undisputed king of spicy masculine perfumery. Fiery black pepper, sweet pineapple, dark tobacco, roasted coffee beans, and balsamic amber create an intoxicating, commanding aura inspired by Sauvage Elixir.',
+        'description': 'Asad is a bold, masculine-leaning fragrance built for those who command attention. Fiery black pepper and tobacco open strong, giving way to roasted coffee and patchouli, before settling into a rich amber and vanilla base. Strong projection that lasts around 7–10+ hours.',
         'notes': {
             'top': ['Black Pepper', 'Pineapple', 'Tobacco'],
             'heart': ['Coffee', 'Patchouli', 'Iris'],
             'base': ['Amber', 'Vanilla', 'Dry Woods', 'Benzoin', 'Labdanum']
         },
         'performance': {
-            'sillage': 'Dominant Room Presence',
-            'longevity': '12+ Hours',
+            'sillage': 'Strong',
+            'longevity': 'Around 7–10+ hours',
             'season': 'Evening • Cold Days • Night Out',
-            'occasion': 'Leadership, Night Events, Signature Winter'
+            'occasion': 'Night Events, Date Night, Bold Daily Wear'
         },
         'sizes': [
             {'size': '10ml Decant', 'priceKES': 800},
             {'size': '100ml Bottle', 'priceKES': 3800, 'isDefault': True}
         ],
-        'accords': ['Warm Spicy', 'Amber', 'Coffee', 'Tobacco', 'Woody']
+        'accords': ['Spicy', 'Amber', 'Warm', 'Vanilla', 'Woody']
     },
     {
         'file': 'WhatsApp Image 2026-10-13 at 12.51.30.jpeg',

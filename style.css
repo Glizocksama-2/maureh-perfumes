@@ -160,3 +160,12 @@ button, a, input, select, textarea {
     max-height: 88vh !important;
   }
 }
+
+/* ── Hero Banner High-DPI Sharpness ───────── */
+.hero-banner-crisp {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}

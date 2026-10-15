@@ -6,9 +6,9 @@ export const VENDORS = [
     verified: true,
     rating: 4.98,
     reviewsCount: 1420,
-    location: "Nairobi CBD & Westlands",
+    location: "Kahawa Sukari, Nairobi",
     dispatchTime: "Same Day Dispatch",
-    avatar: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=150&q=80",
+    avatar: "/images/logo-mark.png",
     description: "Direct importer of luxury niche and designer fragrances with 100% authenticity certificates."
   },
   {

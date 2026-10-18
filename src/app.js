@@ -1179,127 +1179,65 @@ function renderAdminPortal() {
   if (!modal) return;
 
   if (!store.isAdminAuthenticated) {
-    // Render Unified Authentication (Manager Passkey OR Vendor Login)
+    // Dedicated Single-Store Admin Authentication (Supabase Auth)
     modal.innerHTML = `
-      <div class="p-6 sm:p-8 max-w-lg mx-auto text-center space-y-6 my-auto">
+      <div class="p-6 sm:p-8 max-w-md mx-auto text-center space-y-6 my-auto">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-gold-50 border border-gold-200 flex items-center justify-center text-gold-500 text-2xl shadow-md">
           <i class="fas fa-lock"></i>
         </div>
         <div>
-          <h3 class="font-serif text-2xl font-bold text-charcoal-900">Maureh Portal Access</h3>
-          <p class="text-xs text-charcoal-500 mt-1">General Manager & Marketplace Vendor Login</p>
+          <h3 class="font-serif text-2xl font-bold text-charcoal-900">Maureh Admin Login</h3>
+          <p class="text-xs text-charcoal-500 mt-1">Direct store management &amp; inventory controls</p>
         </div>
 
-        <!-- Auth Tabs -->
-        <div class="flex border-b border-gold-200 text-xs font-bold">
-          <button id="tab-btn-gm" class="flex-1 py-2.5 border-b-2 border-charcoal-900 text-charcoal-900">
-            Manager Passkey
-          </button>
-          <button id="tab-btn-vendor" class="flex-1 py-2.5 text-charcoal-400 hover:text-charcoal-700">
-            Vendor Boutique Login
-          </button>
-        </div>
-
-        <!-- Tab 1: General Manager PIN -->
-        <form id="admin-login-form" class="space-y-4">
+        <form id="admin-login-form" class="space-y-4 text-left">
           <div>
-            <label class="block text-xs font-semibold text-charcoal-700 text-left mb-1">Admin Password</label>
-            <input 
-              type="password" 
-              id="admin-pass-input" 
-              placeholder="Enter admin password" 
-              required
-              autocomplete="current-password"
-              class="w-full bg-cream-100 border border-gold-200 rounded-xl px-4 py-3 text-sm text-charcoal-900 text-center font-mono tracking-widest focus:border-gold-400 focus:outline-none"
-            >
-          </div>
-          <div class="flex gap-2">
-            <button type="button" id="close-admin-btn-login" class="flex-1 py-3 rounded-xl border border-gold-200 text-charcoal-600 hover:bg-cream-100 text-xs font-bold uppercase tracking-wider">
-              Cancel
-            </button>
-            <button type="submit" class="flex-1 py-3 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-md">
-              Unlock as GM
-            </button>
-          </div>
-        </form>
-
-        <!-- Tab 2: Vendor Login -->
-        <form id="vendor-login-form" class="hidden space-y-3 text-left">
-          <div>
-            <label class="block text-xs font-semibold text-charcoal-700 mb-1">Vendor Account Email</label>
+            <label class="block text-xs font-semibold text-charcoal-700 mb-1">Admin Email</label>
             <input 
               type="email" 
-              id="vendor-email-input" 
-              placeholder="your@email.com" 
+              id="admin-email-input" 
+              value="machariamoureen78@gmail.com"
               required
               autocomplete="email"
-              class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2 text-xs text-charcoal-800"
+              class="w-full bg-cream-100 border border-gold-200 rounded-xl px-4 py-3 text-xs text-charcoal-900 focus:border-gold-400 focus:outline-none"
             >
           </div>
           <div>
             <label class="block text-xs font-semibold text-charcoal-700 mb-1">Password</label>
             <input 
               type="password" 
-              id="vendor-pass-input" 
-              placeholder="Your password" 
+              id="admin-pass-input" 
+              placeholder="Enter your password" 
               required
               autocomplete="current-password"
-              class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2 text-xs text-charcoal-800 font-mono"
+              class="w-full bg-cream-100 border border-gold-200 rounded-xl px-4 py-3 text-sm text-charcoal-900 focus:border-gold-400 focus:outline-none"
             >
           </div>
           <div class="flex gap-2 pt-2">
-            <button type="button" id="close-vendor-btn-login" class="flex-1 py-2.5 rounded-lg border border-gold-200 text-charcoal-600 hover:bg-cream-100 text-xs font-bold uppercase">
+            <button type="button" id="close-admin-btn-login" class="flex-1 py-3 rounded-xl border border-gold-200 text-charcoal-600 hover:bg-cream-100 text-xs font-bold uppercase tracking-wider">
               Cancel
             </button>
-            <button type="submit" class="flex-1 py-2.5 rounded-lg bg-gold-500 hover:bg-gold-400 text-charcoal-900 font-extrabold text-xs uppercase shadow-md">
-              Vendor Sign In
+            <button type="submit" class="flex-1 py-3 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-md">
+              Sign In
             </button>
           </div>
         </form>
-
       </div>
     `;
 
-    document.getElementById('tab-btn-gm')?.addEventListener('click', () => {
-      document.getElementById('tab-btn-gm').className = 'flex-1 py-2.5 border-b-2 border-charcoal-900 text-charcoal-900 font-bold';
-      document.getElementById('tab-btn-vendor').className = 'flex-1 py-2.5 text-charcoal-400 hover:text-charcoal-700 font-bold';
-      document.getElementById('admin-login-form').classList.remove('hidden');
-      document.getElementById('vendor-login-form').classList.add('hidden');
-    });
-
-    document.getElementById('tab-btn-vendor')?.addEventListener('click', () => {
-      document.getElementById('tab-btn-vendor').className = 'flex-1 py-2.5 border-b-2 border-charcoal-900 text-charcoal-900 font-bold';
-      document.getElementById('tab-btn-gm').className = 'flex-1 py-2.5 text-charcoal-400 hover:text-charcoal-700 font-bold';
-      document.getElementById('vendor-login-form').classList.remove('hidden');
-      document.getElementById('admin-login-form').classList.add('hidden');
-    });
-
     document.getElementById('close-admin-btn-login')?.addEventListener('click', () => {
-      closeModal('admin-modal-overlay', 'admin-modal');
-    });
-    document.getElementById('close-vendor-btn-login')?.addEventListener('click', () => {
       closeModal('admin-modal-overlay', 'admin-modal');
     });
 
     document.getElementById('admin-login-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const val = document.getElementById('admin-pass-input')?.value;
-      const ok = await store.loginAdmin(val);
+      const email = document.getElementById('admin-email-input')?.value || 'machariamoureen78@gmail.com';
+      const pass = document.getElementById('admin-pass-input')?.value;
+      const ok = await store.loginAdmin(pass, email);
       if (ok) {
         renderAdminPortal();
       }
     });
-
-    document.getElementById('vendor-login-form')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('vendor-email-input')?.value;
-      const pass = document.getElementById('vendor-pass-input')?.value;
-      const ok = await store.loginVendor(email, pass);
-      if (ok) {
-        renderAdminPortal();
-      }
-    });
-
 
     openModal('admin-modal-overlay', 'admin-modal');
     return;

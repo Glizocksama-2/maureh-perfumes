@@ -165,40 +165,37 @@ class Store {
   // The admin user must be created once in the Supabase dashboard:
   //   Authentication → Users → Invite / Create user → use machariamoureen78@gmail.com
 
-  async loginAdmin(emailOrPin) {
+  async loginAdmin(password, email = 'machariamoureen78@gmail.com') {
     const supabase = getSupabase();
 
     if (supabase) {
-      // Try Supabase Auth — email is the admin email, emailOrPin is the password
-      const adminEmail = 'machariamoureen78@gmail.com';
+      // Authenticate directly against Supabase Auth using the admin email and password
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: adminEmail,
-        password: emailOrPin
+        email: email.trim(),
+        password: password
       });
       if (!error && data.user) {
         this.isAdminAuthenticated = true;
         localStorage.setItem("maureh_admin_auth", "supabase");
-        this.toast("Admin access unlocked. Welcome back, General Manager!", "success");
+        this.toast("Admin access unlocked. Welcome back!", "success");
         this.notify();
         return true;
       }
-      this.toast("Invalid credentials. Access denied.", "error");
+      this.toast(`Login failed: ${error?.message || "Invalid credentials"}`, "error");
       return false;
     }
 
-    // Offline fallback: require the env-var passcode set in Vercel dashboard
-    // VITE_ADMIN_PASSCODE is set in Vercel → Settings → Environment Variables
-    // It is NOT committed to source control.
+    // Offline / fallback: check env var if configured
     const envPin = import.meta.env?.VITE_ADMIN_PASSCODE;
-    if (envPin && emailOrPin === envPin) {
+    if (envPin && password === envPin) {
       this.isAdminAuthenticated = true;
       localStorage.setItem("maureh_admin_auth", "env");
-      this.toast("Admin access unlocked (offline mode).", "success");
+      this.toast("Admin access unlocked (local mode).", "success");
       this.notify();
       return true;
     }
 
-    this.toast("Invalid passkey. Access denied.", "error");
+    this.toast("Supabase connection required. Please connect Supabase in Cloud DB settings or check your password.", "error");
     return false;
   }
 

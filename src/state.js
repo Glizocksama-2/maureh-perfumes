@@ -9,12 +9,15 @@ export const CURRENCIES = {
   GBP: { code: "GBP", symbol: "£", rate: 0.0060, flag: "🇬🇧", name: "British Pound" }
 };
 
+// Vendor display metadata only — no passwords stored in client code.
+// Authentication is handled server-side via Supabase Auth (signInWithPassword).
 export const VENDOR_ACCOUNTS = [
-  { id: "maureh-vault", name: "Maureh Flagship Vault", email: "machariamoureen78@gmail.com", pass: "vault123", commissionRate: 0.0 },
-  { id: "maison-niche", name: "Maison Niche Kenya", email: "maison@niche.co.ke", pass: "niche123", commissionRate: 0.15 },
-  { id: "arabian-oud", name: "Arabian Oud Oasis", email: "sales@arabianoud.co.ke", pass: "oud123", commissionRate: 0.12 },
-  { id: "decant-atelier", name: "The Decant Atelier", email: "contact@decants.co.ke", pass: "decant123", commissionRate: 0.10 }
+  { id: "maureh-vault",    name: "Maureh Flagship Vault",  email: "machariamoureen78@gmail.com", commissionRate: 0.0  },
+  { id: "maison-niche",    name: "Maison Niche Kenya",      email: "maison@niche.co.ke",          commissionRate: 0.15 },
+  { id: "arabian-oud",     name: "Arabian Oud Oasis",       email: "sales@arabianoud.co.ke",      commissionRate: 0.12 },
+  { id: "decant-atelier",  name: "The Decant Atelier",      email: "contact@decants.co.ke",       commissionRate: 0.10 }
 ];
+
 
 class Store {
   constructor() {
@@ -157,15 +160,44 @@ class Store {
   }
 
   // ─── ADMIN & VENDOR AUTHENTICATION ────────────────────────────────────────
+  // Passwords are NEVER stored in client code.
+  // loginAdmin / loginVendor delegate to Supabase Auth (server-side bcrypt).
+  // The admin user must be created once in the Supabase dashboard:
+  //   Authentication → Users → Invite / Create user → use machariamoureen78@gmail.com
 
-  loginAdmin(passcode) {
-    if (passcode === "admin123" || passcode === "maureh2026") {
+  async loginAdmin(emailOrPin) {
+    const supabase = getSupabase();
+
+    if (supabase) {
+      // Try Supabase Auth — email is the admin email, emailOrPin is the password
+      const adminEmail = 'machariamoureen78@gmail.com';
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: adminEmail,
+        password: emailOrPin
+      });
+      if (!error && data.user) {
+        this.isAdminAuthenticated = true;
+        localStorage.setItem("maureh_admin_auth", "supabase");
+        this.toast("Admin access unlocked. Welcome back, General Manager!", "success");
+        this.notify();
+        return true;
+      }
+      this.toast("Invalid credentials. Access denied.", "error");
+      return false;
+    }
+
+    // Offline fallback: require the env-var passcode set in Vercel dashboard
+    // VITE_ADMIN_PASSCODE is set in Vercel → Settings → Environment Variables
+    // It is NOT committed to source control.
+    const envPin = import.meta.env?.VITE_ADMIN_PASSCODE;
+    if (envPin && emailOrPin === envPin) {
       this.isAdminAuthenticated = true;
-      localStorage.setItem("maureh_admin_auth", "true");
-      this.toast("Admin access unlocked. Welcome back, General Manager!", "success");
+      localStorage.setItem("maureh_admin_auth", "env");
+      this.toast("Admin access unlocked (offline mode).", "success");
       this.notify();
       return true;
     }
+
     this.toast("Invalid passkey. Access denied.", "error");
     return false;
   }
@@ -175,24 +207,65 @@ class Store {
     this.activeVendorUser = null;
     localStorage.removeItem("maureh_admin_auth");
     localStorage.removeItem("maureh_vendor_user");
+    const supabase = getSupabase();
+    if (supabase) supabase.auth.signOut().catch(() => {});
     this.toast("Logged out of Portal.", "info");
     this.notify();
   }
 
-  loginVendor(email, password) {
-    const account = VENDOR_ACCOUNTS.find(v => v.email.toLowerCase() === email.trim().toLowerCase() && v.pass === password);
-    if (account) {
-      this.activeVendorUser = account;
-      this.isAdminAuthenticated = true;
-      localStorage.setItem("maureh_admin_auth", "true");
-      localStorage.setItem("maureh_vendor_user", JSON.stringify(account));
-      this.toast(`Welcome back, ${account.name}!`, "success");
-      this.notify();
-      return true;
+  async loginVendor(email, password) {
+    const supabase = getSupabase();
+    if (!supabase) {
+      this.toast("Supabase connection required for vendor login. Connect via Admin → Cloud DB first.", "error");
+      return false;
     }
-    this.toast("Invalid vendor credentials.", "error");
-    return false;
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    if (error || !data.user) {
+      this.toast("Invalid vendor credentials.", "error");
+      return false;
+    }
+
+    // Match authenticated email to a vendor account for display metadata
+    const account = VENDOR_ACCOUNTS.find(v => v.email.toLowerCase() === email.trim().toLowerCase());
+    this.activeVendorUser = account || { id: 'unknown', name: email.trim(), email: email.trim(), commissionRate: 0 };
+    this.isAdminAuthenticated = true;
+    localStorage.setItem("maureh_admin_auth", "supabase");
+    localStorage.setItem("maureh_vendor_user", JSON.stringify(this.activeVendorUser));
+    this.toast(`Welcome back, ${this.activeVendorUser.name}!`, "success");
+    this.notify();
+    return true;
   }
+
+  // Called on app boot — validates that the Supabase session is still live.
+  // If the Supabase session has expired, clears localStorage auth flags.
+  async checkAuthSession() {
+    const flag = localStorage.getItem("maureh_admin_auth");
+    if (!flag) return;
+
+    if (flag === "supabase") {
+      const supabase = getSupabase();
+      if (!supabase) {
+        // Supabase not configured — clear stale flag
+        this._clearAuthState();
+        return;
+      }
+      const { data } = await supabase.auth.getSession();
+      if (!data?.session) {
+        this._clearAuthState();
+      }
+    }
+    // flag === "env" is acceptable in offline mode
+  }
+
+  _clearAuthState() {
+    this.isAdminAuthenticated = false;
+    this.activeVendorUser = null;
+    localStorage.removeItem("maureh_admin_auth");
+    localStorage.removeItem("maureh_vendor_user");
+    this.notify();
+  }
+
 
   // ─── SUPABASE INTEGRATION METHODS ─────────────────────────────────────────
 

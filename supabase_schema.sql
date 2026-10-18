@@ -67,20 +67,35 @@ CREATE TABLE IF NOT EXISTS public.vendors (
 
 -- 4. Enable Row Level Security (RLS)
 ALTER TABLE public.perfumes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.vendors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.vendors  ENABLE ROW LEVEL SECURITY;
 
--- Public Read Access Policies
-CREATE POLICY "Allow public read perfumes" ON public.perfumes FOR SELECT USING (true);
-CREATE POLICY "Allow public insert perfumes" ON public.perfumes FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update perfumes" ON public.perfumes FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete perfumes" ON public.perfumes FOR DELETE USING (true);
+-- ── PERFUMES ──────────────────────────────────────────────────────────────────
+-- Public: anyone can read the catalog
+CREATE POLICY "Public can read perfumes"
+  ON public.perfumes FOR SELECT USING (true);
 
-CREATE POLICY "Allow public read orders" ON public.orders FOR SELECT USING (true);
-CREATE POLICY "Allow public insert orders" ON public.orders FOR INSERT WITH CHECK (true);
+-- Admin writes: only Supabase service-role (server-side) or authenticated admin can mutate
+-- Use Supabase Admin API / Edge Functions with the service-role key for INSERT/UPDATE/DELETE.
+-- DO NOT grant public INSERT/UPDATE/DELETE — doing so lets anyone wipe or tamper the catalog.
 
-CREATE POLICY "Allow public read vendors" ON public.vendors FOR SELECT USING (true);
+-- ── ORDERS ────────────────────────────────────────────────────────────────────
+-- Public: customers can place orders
+CREATE POLICY "Public can insert orders"
+  ON public.orders FOR INSERT WITH CHECK (true);
+
+-- Only service-role (backend / Supabase dashboard) can read or update orders
+CREATE POLICY "Service role can read orders"
+  ON public.orders FOR SELECT USING (auth.role() = 'service_role');
+
+CREATE POLICY "Service role can update orders"
+  ON public.orders FOR UPDATE USING (auth.role() = 'service_role');
+
+-- ── VENDORS ───────────────────────────────────────────────────────────────────
+CREATE POLICY "Public can read vendors"
+  ON public.vendors FOR SELECT USING (true);
 
 -- 5. Enable Realtime Replication
 ALTER PUBLICATION supabase_realtime ADD TABLE public.perfumes;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
+

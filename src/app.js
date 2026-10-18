@@ -4,6 +4,20 @@ import { REVIEWS } from './data/reviews.js';
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 
+/**
+ * Escapes user-supplied strings before inserting into innerHTML.
+ * Prevents XSS by converting <, >, &, ", ' to safe HTML entities.
+ */
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function stars(rating) {
   const full = Math.floor(rating || 5);
   const half = (rating || 5) % 1 >= 0.5 ? 1 : 0;
@@ -14,6 +28,7 @@ function stars(rating) {
     '<i class="far fa-star text-charcoal-400"></i>'.repeat(empty)
   );
 }
+
 
 function openModal(overlayId, modalId) {
   const overlay = document.getElementById(overlayId);
@@ -863,16 +878,16 @@ function renderOrderSuccessModal(order) {
       <div class="p-4 rounded-xl bg-cream-100 border border-gold-200 text-left text-xs space-y-2">
         <div class="flex justify-between border-b border-gold-200 pb-2 font-bold">
           <span>Tracking Order ID:</span>
-          <span class="text-gold-600 font-cinzel text-sm">${order.id}</span>
+          <span class="text-gold-600 font-cinzel text-sm">${escapeHtml(order.id)}</span>
         </div>
         <div class="flex justify-between">
           <span class="text-charcoal-500">Payment Method:</span>
-          <span class="font-semibold text-charcoal-900">${order.paymentMethod}</span>
+          <span class="font-semibold text-charcoal-900">${escapeHtml(order.paymentMethod)}</span>
         </div>
         ${!isCOD ? `
         <div class="flex justify-between">
           <span class="text-charcoal-500">Transaction Reference:</span>
-          <span class="font-mono text-emerald-700 font-bold">${order.transactionRef}</span>
+          <span class="font-mono text-emerald-700 font-bold">${escapeHtml(order.transactionRef)}</span>
         </div>` : `
         <div class="flex justify-between">
           <span class="text-charcoal-500">Payment Status:</span>
@@ -880,12 +895,13 @@ function renderOrderSuccessModal(order) {
         </div>`}
         <div class="flex justify-between">
           <span class="text-charcoal-500">Recipient:</span>
-          <span class="text-charcoal-800 font-semibold">${order.customerName} (${order.phone})</span>
+          <span class="text-charcoal-800 font-semibold">${escapeHtml(order.customerName)} (${escapeHtml(order.phone)})</span>
         </div>
         <div class="flex justify-between">
           <span class="text-charcoal-500">Delivery Destination:</span>
-          <span class="text-charcoal-800 text-right max-w-[200px] truncate">${order.deliveryArea}</span>
+          <span class="text-charcoal-800 text-right max-w-[200px] truncate">${escapeHtml(order.deliveryArea)}</span>
         </div>
+
         ${order.deliveryFee ? `
         <div class="flex justify-between">
           <span class="text-charcoal-500">Distance Delivery Fee:</span>
@@ -1173,15 +1189,15 @@ function renderAdminPortal() {
         <!-- Tab 1: General Manager PIN -->
         <form id="admin-login-form" class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold text-charcoal-700 text-left mb-1">Master PIN / Passkey</label>
+            <label class="block text-xs font-semibold text-charcoal-700 text-left mb-1">Admin Password</label>
             <input 
               type="password" 
               id="admin-pass-input" 
-              placeholder="Enter PIN (Demo: admin123)" 
+              placeholder="Enter admin password" 
               required
+              autocomplete="current-password"
               class="w-full bg-cream-100 border border-gold-200 rounded-xl px-4 py-3 text-sm text-charcoal-900 text-center font-mono tracking-widest focus:border-gold-400 focus:outline-none"
             >
-            <p class="text-[10px] text-charcoal-400 mt-1 text-left">Demo GM Passcode: <code class="bg-cream-200 px-1 py-0.5 rounded text-gold-600 font-bold">admin123</code></p>
           </div>
           <div class="flex gap-2">
             <button type="button" id="close-admin-btn-login" class="flex-1 py-3 rounded-xl border border-gold-200 text-charcoal-600 hover:bg-cream-100 text-xs font-bold uppercase tracking-wider">
@@ -1200,9 +1216,9 @@ function renderAdminPortal() {
             <input 
               type="email" 
               id="vendor-email-input" 
-              placeholder="e.g. maison@niche.co.ke" 
-              value="maison@niche.co.ke"
+              placeholder="your@email.com" 
               required
+              autocomplete="email"
               class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2 text-xs text-charcoal-800"
             >
           </div>
@@ -1211,12 +1227,11 @@ function renderAdminPortal() {
             <input 
               type="password" 
               id="vendor-pass-input" 
-              placeholder="Password (Demo: niche123)" 
-              value="niche123"
+              placeholder="Your password" 
               required
+              autocomplete="current-password"
               class="w-full bg-cream-100 border border-gold-200 rounded-lg px-3 py-2 text-xs text-charcoal-800 font-mono"
             >
-            <p class="text-[10px] text-charcoal-400 mt-1">Demo: <code class="text-gold-600 font-bold">maison@niche.co.ke</code> / <code class="text-gold-600 font-bold">niche123</code></p>
           </div>
           <div class="flex gap-2 pt-2">
             <button type="button" id="close-vendor-btn-login" class="flex-1 py-2.5 rounded-lg border border-gold-200 text-charcoal-600 hover:bg-cream-100 text-xs font-bold uppercase">
@@ -1227,6 +1242,7 @@ function renderAdminPortal() {
             </button>
           </div>
         </form>
+
       </div>
     `;
 
@@ -1251,22 +1267,25 @@ function renderAdminPortal() {
       closeModal('admin-modal-overlay', 'admin-modal');
     });
 
-    document.getElementById('admin-login-form')?.addEventListener('submit', (e) => {
+    document.getElementById('admin-login-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const val = document.getElementById('admin-pass-input')?.value;
-      if (store.loginAdmin(val)) {
+      const ok = await store.loginAdmin(val);
+      if (ok) {
         renderAdminPortal();
       }
     });
 
-    document.getElementById('vendor-login-form')?.addEventListener('submit', (e) => {
+    document.getElementById('vendor-login-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('vendor-email-input')?.value;
       const pass = document.getElementById('vendor-pass-input')?.value;
-      if (store.loginVendor(email, pass)) {
+      const ok = await store.loginVendor(email, pass);
+      if (ok) {
         renderAdminPortal();
       }
     });
+
 
     openModal('admin-modal-overlay', 'admin-modal');
     return;
@@ -2429,19 +2448,19 @@ function handleOrderTrackingSearch() {
   if (order) {
     resultBox.innerHTML = `
       <div class="flex items-center justify-between text-xs">
-        <span class="text-charcoal-600">Order: <strong class="text-charcoal-900 font-cinzel">${order.id}</strong></span>
-        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[10px] border border-emerald-300">${order.status}</span>
+        <span class="text-charcoal-600">Order: <strong class="text-charcoal-900 font-cinzel">${escapeHtml(order.id)}</strong></span>
+        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[10px] border border-emerald-300">${escapeHtml(order.status)}</span>
       </div>
       <div class="text-[11px] text-charcoal-500">
-        <p><strong>Customer:</strong> ${order.customerName} (${order.phone})</p>
-        <p><strong>Delivery Address:</strong> ${order.deliveryAddress}, ${order.deliveryArea}</p>
-        <p><strong>Payment Ref:</strong> <span class="font-mono text-emerald-700">${order.transactionRef}</span></p>
+        <p><strong>Customer:</strong> ${escapeHtml(order.customerName)} (${escapeHtml(order.phone)})</p>
+        <p><strong>Delivery Address:</strong> ${escapeHtml(order.deliveryAddress)}, ${escapeHtml(order.deliveryArea)}</p>
+        <p><strong>Payment Ref:</strong> <span class="font-mono text-emerald-700">${escapeHtml(order.transactionRef)}</span></p>
         <p><strong>Total:</strong> ${store.formatPrice(order.totalKES)}</p>
       </div>
       <div class="space-y-3 pt-2 text-xs border-t border-gold-200">
         <div class="flex items-start gap-3">
           <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold"><i class="fas fa-check"></i></span>
-          <div><p class="font-bold text-charcoal-800">Order Authenticated & Packed</p><p class="text-[10px] text-charcoal-400">Inspected at Maureh Vault</p></div>
+          <div><p class="font-bold text-charcoal-800">Order Authenticated &amp; Packed</p><p class="text-[10px] text-charcoal-400">Inspected at Maureh Vault</p></div>
         </div>
         <div class="flex items-start gap-3">
           <span class="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold"><i class="fas fa-check"></i></span>
@@ -2449,22 +2468,25 @@ function handleOrderTrackingSearch() {
         </div>
         <div class="flex items-start gap-3">
           <span class="w-5 h-5 rounded-full bg-gold-400 text-charcoal-900 flex items-center justify-center text-[10px] font-bold animate-pulse"><i class="fas fa-motorcycle"></i></span>
-          <div><p class="font-bold text-gold-600">${order.status}</p><p class="text-[10px] text-charcoal-400">Estimated delivery within 30-45 mins</p></div>
+          <div><p class="font-bold text-gold-600">${escapeHtml(order.status)}</p><p class="text-[10px] text-charcoal-400">Estimated delivery within 30-45 mins</p></div>
         </div>
       </div>
     `;
   } else {
-    resultBox.innerHTML = `
-      <div class="p-3 text-center text-xs text-rose-600 bg-rose-50 rounded-lg border border-rose-200">
-        No order found with code "${code}". Please verify your order number or contact WhatsApp concierge.
-      </div>
-    `;
+    // Use textContent for the untrusted user input — avoids reflected XSS entirely
+    resultBox.innerHTML = '<div class="p-3 text-center text-xs text-rose-600 bg-rose-50 rounded-lg border border-rose-200"></div>';
+    resultBox.firstElementChild.textContent = `No order found with code "${code}". Please verify your order number or contact WhatsApp concierge.`;
   }
 }
 
+
 // ─── BOOT & EVENT BINDINGS ────────────────────────────────────────────────────
 
-function init() {
+async function init() {
+  // Validate any persisted auth session against the server before rendering
+  // This prevents stale localStorage flags from granting undeserved admin access
+  await store.checkAuthSession();
+
   renderProductGrid();
   renderCategoryPills();
   renderVendors();

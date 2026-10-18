@@ -92,11 +92,11 @@ function renderProductCard(p) {
   ).join('');
 
   return `
-    <article class="group relative flex flex-col bg-white rounded-2xl border border-gold-100 hover:border-gold-300 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-gold-200/50 hover:-translate-y-0.5 shadow-sm">
+    <article class="group relative flex flex-col bg-white rounded-xl sm:rounded-2xl border border-gold-100 hover:border-gold-300 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-gold-200/50 hover:-translate-y-0.5 shadow-sm">
 
       <!-- Product Image -->
       <div 
-        class="product-image-click relative h-64 overflow-hidden bg-cream-200 cursor-pointer"
+        class="product-image-click relative h-44 sm:h-64 overflow-hidden bg-cream-200 cursor-pointer"
         data-id="${p.id}"
         title="View ${p.name} details"
       >
@@ -109,76 +109,76 @@ function renderProductCard(p) {
         <div class="absolute inset-0 bg-gradient-to-t from-charcoal-900/60 via-transparent to-transparent"></div>
 
         <!-- Badges -->
-        <div class="absolute top-3 left-3 flex flex-col gap-1 pointer-events-none">
-          ${p.isBestseller ? `<span class="px-2 py-0.5 rounded-full bg-gold-400 text-charcoal-900 text-[10px] font-extrabold uppercase tracking-wider shadow-sm">Bestseller</span>` : ''}
-          ${p.isNew ? `<span class="px-2 py-0.5 rounded-full bg-violet-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">New Arrival</span>` : ''}
-          ${discount > 5 ? `<span class="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold shadow-sm">-${discount}%</span>` : ''}
-          ${!p.inStock ? `<span class="px-2 py-0.5 rounded-full bg-charcoal-900 text-white text-[10px] font-bold uppercase">Out of Stock</span>` : ''}
+        <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 pointer-events-none">
+          ${p.isBestseller ? `<span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-gold-400 text-charcoal-900 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shadow-sm">Bestseller</span>` : ''}
+          ${p.isNew ? `<span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-violet-600 text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shadow-sm">New</span>` : ''}
+          ${discount > 5 ? `<span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold shadow-sm">-${discount}%</span>` : ''}
+          ${!p.inStock ? `<span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-charcoal-900 text-white text-[9px] sm:text-[10px] font-bold uppercase">Out of Stock</span>` : ''}
         </div>
 
         <!-- Wishlist button -->
         <button 
-          class="wishlist-toggle absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/80 backdrop-blur-sm border border-gold-200 hover:border-rose-400 ${wishlisted ? 'text-rose-500' : 'text-charcoal-400 hover:text-rose-500'} z-10"
+          class="wishlist-toggle absolute top-2 right-2 sm:top-3 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all bg-white/85 backdrop-blur-sm border border-gold-200 hover:border-rose-400 ${wishlisted ? 'text-rose-500' : 'text-charcoal-400 hover:text-rose-500'} z-10"
           data-id="${p.id}"
           title="Save to Wishlist"
         >
-          <i class="${wishlisted ? 'fas' : 'far'} fa-heart text-sm"></i>
+          <i class="${wishlisted ? 'fas' : 'far'} fa-heart text-xs sm:text-sm"></i>
         </button>
 
-        <!-- Quick View Overlay hint on hover -->
-        <div class="absolute inset-0 bg-charcoal-900/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+        <!-- Quick View Overlay hint on hover (desktop only) -->
+        <div class="hidden sm:flex absolute inset-0 bg-charcoal-900/30 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center pointer-events-none">
           <span class="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-charcoal-900 text-xs font-bold shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform">
             <i class="fas fa-eye text-gold-500"></i> Quick View
           </span>
         </div>
 
         <!-- Gender Tag -->
-        <div class="absolute bottom-3 left-3 text-[10px] px-2 py-0.5 rounded-full bg-white/90 border border-gold-200 text-gold-600 font-semibold backdrop-blur-sm shadow-sm pointer-events-none">
+        <div class="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-white/90 border border-gold-200 text-gold-600 font-semibold backdrop-blur-sm shadow-sm pointer-events-none">
           ${p.gender === 'Men' ? '♂ Men' : p.gender === 'Women' ? '♀ Women' : '⚥ Unisex'}
         </div>
       </div>
 
       <!-- Product Info -->
-      <div class="flex flex-col flex-1 p-4 space-y-3">
+      <div class="flex flex-col flex-1 p-3 sm:p-4 space-y-2 sm:space-y-3">
 
         <div class="cursor-pointer product-title-click" data-id="${p.id}" title="View ${p.name} details">
-          <span class="text-[10px] uppercase tracking-widest text-gold-500 font-semibold">${p.brand}</span>
-          <h3 class="font-serif text-sm font-bold text-charcoal-900 leading-snug line-clamp-2 mt-0.5 group-hover:text-gold-600 transition-colors">${p.name}</h3>
-          <p class="text-[11px] text-charcoal-500 mt-0.5">${p.subtitle || ''}</p>
+          <span class="text-[9px] sm:text-[10px] uppercase tracking-widest text-gold-500 font-semibold block truncate">${p.brand}</span>
+          <h3 class="font-serif text-xs sm:text-sm font-bold text-charcoal-900 leading-snug line-clamp-1 sm:line-clamp-2 mt-0.5 group-hover:text-gold-600 transition-colors">${p.name}</h3>
+          <p class="hidden sm:block text-[11px] text-charcoal-500 mt-0.5 truncate">${p.subtitle || ''}</p>
         </div>
 
         <!-- Rating -->
-        <div class="flex items-center gap-1.5 text-xs">
-          <div class="flex gap-0.5">${stars(p.rating)}</div>
-          <span class="text-gold-500 font-semibold">${p.rating || 5.0}</span>
-          <span class="text-charcoal-400">(${p.reviewsCount || 1})</span>
+        <div class="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs">
+          <div class="flex gap-0.5 text-[10px] sm:text-xs">${stars(p.rating)}</div>
+          <span class="text-gold-500 font-semibold text-[11px] sm:text-xs">${p.rating || 5.0}</span>
+          <span class="text-charcoal-400 text-[10px] sm:text-xs">(${p.reviewsCount || 1})</span>
         </div>
 
-        <!-- Scent Accords Preview -->
-        <div class="flex flex-wrap gap-1.5">${accordPills}</div>
+        <!-- Scent Accords Preview (Desktop/Tablet only) -->
+        <div class="hidden sm:flex flex-wrap gap-1.5">${accordPills}</div>
 
-        <!-- Vendor Badge -->
-        <div class="flex items-center gap-1.5 text-[10px] text-charcoal-500">
+        <!-- Vendor Badge (Desktop/Tablet only) -->
+        <div class="hidden sm:flex items-center gap-1.5 text-[10px] text-charcoal-500">
           <i class="fas fa-check-circle text-emerald-500"></i>
           <span>${p.vendorName || 'Maureh Vault'}</span>
         </div>
 
         <!-- Price & Actions -->
-        <div class="mt-auto pt-3 border-t border-gold-100 flex items-center justify-between gap-2">
-          <div>
-            <div class="font-cinzel text-lg font-extrabold text-gold-500">${price}</div>
-            <div class="text-[10px] text-charcoal-400 line-through">${origPrice}</div>
+        <div class="mt-auto pt-2 sm:pt-3 border-t border-gold-100 flex items-center justify-between gap-1.5 sm:gap-2">
+          <div class="min-w-0">
+            <div class="font-cinzel text-xs sm:text-lg font-extrabold text-gold-500 truncate">${price}</div>
+            <div class="text-[9px] sm:text-[10px] text-charcoal-400 line-through truncate">${origPrice}</div>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <button 
-              class="quick-view-btn px-3 py-2 rounded-lg bg-cream-100 border border-gold-200 hover:border-gold-400 text-gold-600 text-xs font-semibold transition-all"
+              class="quick-view-btn px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-cream-100 border border-gold-200 hover:border-gold-400 text-gold-600 text-xs font-semibold transition-all flex items-center justify-center min-h-[36px] sm:min-h-[40px] min-w-[36px]"
               data-id="${p.id}"
               title="Quick View"
             >
               <i class="fas fa-eye"></i>
             </button>
             <button 
-              class="add-to-cart-btn px-3.5 py-2 rounded-lg ${p.inStock ? 'bg-charcoal-900 hover:bg-charcoal-800 text-white' : 'bg-charcoal-300 text-charcoal-500 cursor-not-allowed'} text-xs font-extrabold uppercase tracking-wider transition-all shadow-md"
+              class="add-to-cart-btn px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg ${p.inStock ? 'bg-charcoal-900 hover:bg-charcoal-800 text-white' : 'bg-charcoal-300 text-charcoal-500 cursor-not-allowed'} text-xs font-extrabold uppercase tracking-wider transition-all shadow-md flex items-center justify-center min-h-[36px] sm:min-h-[40px] min-w-[36px]"
               data-id="${p.id}"
               ${!p.inStock ? 'disabled' : ''}
               title="${p.inStock ? 'Add to Bag' : 'Out of Stock'}"
@@ -204,7 +204,7 @@ function renderQuickView(p) {
 
   const sizePills = (p.sizes || []).map(s => `
     <button 
-      class="size-selector-btn px-3.5 py-2 rounded-lg border text-xs font-semibold transition-all ${s.isDefault ? 'bg-charcoal-900 border-charcoal-900 text-white' : 'bg-white border-gold-200 text-charcoal-700 hover:border-gold-400'}"
+      class="size-selector-btn px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg border text-xs font-semibold transition-all ${s.isDefault ? 'bg-charcoal-900 border-charcoal-900 text-white' : 'bg-white border-gold-200 text-charcoal-700 hover:border-gold-400'}"
       data-price="${s.priceKES}"
       data-size="${s.size}"
     >
@@ -213,12 +213,12 @@ function renderQuickView(p) {
   `).join('');
 
   const notePyramid = (label, icon, notes, colorBorder) => `
-    <div class="pyramid-tier p-3 rounded-xl bg-cream-100 border ${colorBorder} space-y-1.5">
-      <div class="flex items-center gap-2 text-xs font-bold text-charcoal-800 uppercase tracking-widest">
+    <div class="pyramid-tier p-2.5 sm:p-3 rounded-xl bg-cream-100 border ${colorBorder} space-y-1">
+      <div class="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-charcoal-800 uppercase tracking-widest">
         <i class="${icon} text-gold-500"></i> ${label} Notes
       </div>
-      <div class="flex flex-wrap gap-1.5">
-        ${(notes || []).map(n => `<span class="px-2 py-0.5 text-[10px] rounded-full bg-white border border-gold-200 text-charcoal-700 font-medium">${n}</span>`).join('')}
+      <div class="flex flex-wrap gap-1 sm:gap-1.5">
+        ${(notes || []).map(n => `<span class="px-2 py-0.5 text-[9px] sm:text-[10px] rounded-full bg-white border border-gold-200 text-charcoal-700 font-medium">${n}</span>`).join('')}
       </div>
     </div>
   `;
@@ -227,24 +227,24 @@ function renderQuickView(p) {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
       
       <!-- Image Panel -->
-      <div class="relative min-h-[340px] md:min-h-[500px] flex items-center justify-center p-6 sm:p-8 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none bg-gradient-to-b from-cream-100 to-cream-200 border-b md:border-b-0 md:border-r border-gold-200 overflow-hidden">
+      <div class="qv-image-panel relative min-h-[220px] sm:min-h-[300px] md:min-h-[500px] flex items-center justify-center p-4 sm:p-8 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none bg-gradient-to-b from-cream-100 to-cream-200 border-b md:border-b-0 md:border-r border-gold-200 overflow-hidden">
         <img 
           src="${p.image}" 
           alt="${p.name}" 
-          class="max-h-[320px] md:max-h-[460px] w-auto max-w-full object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
+          class="max-h-[190px] sm:max-h-[280px] md:max-h-[460px] w-auto max-w-full object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
         >
-        <div class="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
-          ${p.isBestseller ? `<span class="px-2.5 py-1 rounded-full bg-gold-400 text-charcoal-900 text-[10px] font-extrabold uppercase shadow-sm">Bestseller</span>` : ''}
-          ${p.isNew ? `<span class="px-2.5 py-1 rounded-full bg-violet-600 text-white text-[10px] font-bold uppercase shadow-sm">New Arrival</span>` : ''}
-          ${discount > 5 ? `<span class="px-2.5 py-1 rounded-full bg-rose-500 text-white text-[10px] font-bold shadow-sm">-${discount}% OFF</span>` : ''}
+        <div class="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-col gap-1 z-10">
+          ${p.isBestseller ? `<span class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-gold-400 text-charcoal-900 text-[9px] sm:text-[10px] font-extrabold uppercase shadow-sm">Bestseller</span>` : ''}
+          ${p.isNew ? `<span class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-violet-600 text-white text-[9px] sm:text-[10px] font-bold uppercase shadow-sm">New</span>` : ''}
+          ${discount > 5 ? `<span class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold shadow-sm">-${discount}% OFF</span>` : ''}
         </div>
-        <button id="close-quickview-btn" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/95 text-charcoal-700 hover:text-charcoal-950 flex items-center justify-center border border-gold-200 hover:bg-charcoal-900 hover:text-white transition-all shadow-md z-10" title="Close">
+        <button id="close-quickview-btn" class="absolute top-3 right-3 sm:top-4 sm:right-4 w-9 h-9 rounded-full bg-white/95 text-charcoal-700 hover:text-charcoal-950 flex items-center justify-center border border-gold-200 hover:bg-charcoal-900 hover:text-white transition-all shadow-md z-10" title="Close">
           <i class="fas fa-times text-sm"></i>
         </button>
       </div>
 
       <!-- Detail Panel -->
-      <div class="p-6 space-y-4 overflow-y-auto max-h-[80vh] md:max-h-[90vh] bg-white">
+      <div class="qv-detail-panel p-4 sm:p-6 space-y-3 sm:space-y-4 overflow-y-auto max-h-[75vh] md:max-h-[90vh] bg-white">
         
         <div>
           <span class="text-[10px] uppercase tracking-widest text-gold-500 font-bold">${p.brand} • ${p.concentration || 'Eau de Parfum'}</span>
@@ -1256,63 +1256,63 @@ function renderAdminPortal() {
 
   modal.innerHTML = `
     <!-- Top Header -->
-    <div class="p-5 border-b border-gold-200 bg-cream-100 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl ${isVendor ? 'bg-emerald-600 text-white' : 'bg-gold-400 text-charcoal-900'} flex items-center justify-center font-bold shadow-md">
-          <i class="fas ${isVendor ? 'fa-store' : 'fa-boxes-stacked'}"></i>
+    <div class="p-3 sm:p-5 border-b border-gold-200 bg-cream-100 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+      <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl ${isVendor ? 'bg-emerald-600 text-white' : 'bg-gold-400 text-charcoal-900'} flex items-center justify-center font-bold shadow-md flex-shrink-0">
+          <i class="fas ${isVendor ? 'fa-store' : 'fa-boxes-stacked'} text-sm sm:text-base"></i>
         </div>
-        <div>
-          <h2 class="font-serif text-lg font-bold text-charcoal-900 leading-tight">
-            ${isVendor ? `${currentVendor.name} Portal` : 'Master Catalog & Inventory Management'}
+        <div class="min-w-0">
+          <h2 class="font-serif text-base sm:text-lg font-bold text-charcoal-900 leading-tight truncate">
+            ${isVendor ? `${currentVendor.name} Portal` : 'Master Catalog & Inventory'}
           </h2>
-          <p class="text-xs text-charcoal-500">
-            ${isVendor ? `Marketplace Vendor Dashboard (${(currentVendor.commissionRate * 100)}% platform commission)` : 'Full store access & live storefront synchronization'}
+          <p class="text-[11px] sm:text-xs text-charcoal-500 truncate">
+            ${isVendor ? `Marketplace Vendor Dashboard (${(currentVendor.commissionRate * 100)}%)` : 'Live storefront synchronization'}
           </p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="admin-cloud-btn" class="px-3 py-1.5 rounded-lg border border-gold-300 text-charcoal-700 bg-white hover:bg-gold-50 text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap w-full sm:w-auto justify-end">
+        <button id="admin-cloud-btn" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-gold-300 text-charcoal-700 bg-white hover:bg-gold-50 text-[11px] sm:text-xs font-semibold flex items-center gap-1 shadow-sm">
           <i class="fas fa-cloud"></i> Cloud DB
         </button>
-        <button id="admin-export-btn" class="px-3 py-1.5 rounded-lg border border-gold-300 text-charcoal-700 bg-white hover:bg-gold-50 text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+        <button id="admin-export-btn" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-gold-300 text-charcoal-700 bg-white hover:bg-gold-50 text-[11px] sm:text-xs font-semibold flex items-center gap-1 shadow-sm">
           <i class="fas fa-download"></i> Backup
         </button>
-        <button id="admin-import-btn" class="px-3 py-1.5 rounded-lg border border-gold-300 text-charcoal-700 bg-white hover:bg-gold-50 text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+        <button id="admin-import-btn" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-gold-300 text-charcoal-700 bg-white hover:bg-gold-50 text-[11px] sm:text-xs font-semibold flex items-center gap-1 shadow-sm">
           <i class="fas fa-upload"></i> Import
         </button>
-        <button id="admin-logout-btn" class="px-3 py-1.5 rounded-lg border border-rose-300 text-rose-600 bg-white hover:bg-rose-50 text-xs font-semibold flex items-center gap-1.5">
+        <button id="admin-logout-btn" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-rose-300 text-rose-600 bg-white hover:bg-rose-50 text-[11px] sm:text-xs font-semibold flex items-center gap-1">
           <i class="fas fa-arrow-right-from-bracket"></i> Lock
         </button>
-        <button id="close-admin-btn-dashboard" class="w-8 h-8 rounded-full bg-white border border-gold-200 text-charcoal-500 hover:bg-charcoal-900 hover:text-white flex items-center justify-center transition-colors">
+        <button id="close-admin-btn-dashboard" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-gold-200 text-charcoal-500 hover:bg-charcoal-900 hover:text-white flex items-center justify-center transition-colors flex-shrink-0">
           <i class="fas fa-times text-xs"></i>
         </button>
       </div>
     </div>
 
     <!-- Quick Stats Bar -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-cream-50 border-b border-gold-100 text-xs">
-      <div class="p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
-        <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">Active SKUs</span>
-        <div class="text-xl font-bold font-cinzel text-charcoal-900 mt-0.5">${totalSKUs} Flacons</div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4 bg-cream-50 border-b border-gold-100 text-xs">
+      <div class="p-2.5 sm:p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
+        <span class="text-charcoal-400 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Active SKUs</span>
+        <div class="text-base sm:text-xl font-bold font-cinzel text-charcoal-900 mt-0.5">${totalSKUs} Flacons</div>
       </div>
-      <div class="p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
-        <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">Inventory Value</span>
-        <div class="text-xl font-bold font-cinzel text-gold-600 mt-0.5">${store.formatPrice(totalValuationKES)}</div>
+      <div class="p-2.5 sm:p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
+        <span class="text-charcoal-400 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Inventory Value</span>
+        <div class="text-base sm:text-xl font-bold font-cinzel text-gold-600 mt-0.5 truncate">${store.formatPrice(totalValuationKES)}</div>
       </div>
-      <div class="p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
-        <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">Stock Status</span>
-        <div class="text-xl font-bold font-cinzel ${outOfStockCount > 0 ? 'text-amber-600' : 'text-emerald-600'} mt-0.5">
+      <div class="p-2.5 sm:p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
+        <span class="text-charcoal-400 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Stock Status</span>
+        <div class="text-base sm:text-xl font-bold font-cinzel ${outOfStockCount > 0 ? 'text-amber-600' : 'text-emerald-600'} mt-0.5">
           ${totalSKUs - outOfStockCount} In / ${outOfStockCount} Out
         </div>
       </div>
-      <div class="p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
-        <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">Recent Orders</span>
-        <div class="text-xl font-bold font-cinzel text-charcoal-900 mt-0.5">${store.orders.length} Processed</div>
+      <div class="p-2.5 sm:p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
+        <span class="text-charcoal-400 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Recent Orders</span>
+        <div class="text-base sm:text-xl font-bold font-cinzel text-charcoal-900 mt-0.5">${store.orders.length} Processed</div>
       </div>
     </div>
 
     <!-- Toolbar -->
-    <div class="p-4 bg-white border-b border-gold-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="p-3 sm:p-4 bg-white border-b border-gold-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
       <div class="relative w-full sm:w-80">
         <input 
           type="text" 
@@ -1323,15 +1323,15 @@ function renderAdminPortal() {
         <i class="fas fa-search absolute left-3 top-2.5 text-charcoal-400 text-xs"></i>
       </div>
       
-      <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-        <button id="admin-add-perfume-btn" class="px-4 py-2 rounded-lg bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-md">
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button id="admin-add-perfume-btn" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md min-h-[40px]">
           <i class="fas fa-plus text-gold-300"></i> Add New Fragrance
         </button>
       </div>
     </div>
 
     <!-- Inventory Table Container -->
-    <div class="flex-1 overflow-y-auto p-4 bg-cream-50">
+    <div class="flex-1 overflow-y-auto p-3 sm:p-4 bg-cream-50">
       <div id="admin-inventory-table-container"></div>
     </div>
   `;

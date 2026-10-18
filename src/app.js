@@ -95,7 +95,11 @@ function renderProductCard(p) {
     <article class="group relative flex flex-col bg-white rounded-2xl border border-gold-100 hover:border-gold-300 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-gold-200/50 hover:-translate-y-0.5 shadow-sm">
 
       <!-- Product Image -->
-      <div class="relative h-56 overflow-hidden bg-cream-200">
+      <div 
+        class="product-image-click relative h-64 overflow-hidden bg-cream-200 cursor-pointer"
+        data-id="${p.id}"
+        title="View ${p.name} details"
+      >
         <img 
           src="${p.image}" 
           alt="${p.name} – ${p.brand}"
@@ -105,7 +109,7 @@ function renderProductCard(p) {
         <div class="absolute inset-0 bg-gradient-to-t from-charcoal-900/60 via-transparent to-transparent"></div>
 
         <!-- Badges -->
-        <div class="absolute top-3 left-3 flex flex-col gap-1">
+        <div class="absolute top-3 left-3 flex flex-col gap-1 pointer-events-none">
           ${p.isBestseller ? `<span class="px-2 py-0.5 rounded-full bg-gold-400 text-charcoal-900 text-[10px] font-extrabold uppercase tracking-wider shadow-sm">Bestseller</span>` : ''}
           ${p.isNew ? `<span class="px-2 py-0.5 rounded-full bg-violet-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">New Arrival</span>` : ''}
           ${discount > 5 ? `<span class="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold shadow-sm">-${discount}%</span>` : ''}
@@ -114,15 +118,22 @@ function renderProductCard(p) {
 
         <!-- Wishlist button -->
         <button 
-          class="wishlist-toggle absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/80 backdrop-blur-sm border border-gold-200 hover:border-rose-400 ${wishlisted ? 'text-rose-500' : 'text-charcoal-400 hover:text-rose-500'}"
+          class="wishlist-toggle absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/80 backdrop-blur-sm border border-gold-200 hover:border-rose-400 ${wishlisted ? 'text-rose-500' : 'text-charcoal-400 hover:text-rose-500'} z-10"
           data-id="${p.id}"
           title="Save to Wishlist"
         >
           <i class="${wishlisted ? 'fas' : 'far'} fa-heart text-sm"></i>
         </button>
 
+        <!-- Quick View Overlay hint on hover -->
+        <div class="absolute inset-0 bg-charcoal-900/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+          <span class="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-charcoal-900 text-xs font-bold shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+            <i class="fas fa-eye text-gold-500"></i> Quick View
+          </span>
+        </div>
+
         <!-- Gender Tag -->
-        <div class="absolute bottom-3 left-3 text-[10px] px-2 py-0.5 rounded-full bg-white/90 border border-gold-200 text-gold-600 font-semibold backdrop-blur-sm shadow-sm">
+        <div class="absolute bottom-3 left-3 text-[10px] px-2 py-0.5 rounded-full bg-white/90 border border-gold-200 text-gold-600 font-semibold backdrop-blur-sm shadow-sm pointer-events-none">
           ${p.gender === 'Men' ? '♂ Men' : p.gender === 'Women' ? '♀ Women' : '⚥ Unisex'}
         </div>
       </div>
@@ -130,7 +141,7 @@ function renderProductCard(p) {
       <!-- Product Info -->
       <div class="flex flex-col flex-1 p-4 space-y-3">
 
-        <div>
+        <div class="cursor-pointer product-title-click" data-id="${p.id}" title="View ${p.name} details">
           <span class="text-[10px] uppercase tracking-widest text-gold-500 font-semibold">${p.brand}</span>
           <h3 class="font-serif text-sm font-bold text-charcoal-900 leading-snug line-clamp-2 mt-0.5 group-hover:text-gold-600 transition-colors">${p.name}</h3>
           <p class="text-[11px] text-charcoal-500 mt-0.5">${p.subtitle || ''}</p>
@@ -216,16 +227,19 @@ function renderQuickView(p) {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
       
       <!-- Image Panel -->
-      <div class="relative h-72 md:h-auto min-h-80 overflow-hidden rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none bg-cream-200">
-        <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover object-center">
-        <div class="absolute inset-0 bg-gradient-to-t from-charcoal-900/60 via-transparent to-transparent"></div>
-        <div class="absolute top-4 left-4 flex flex-col gap-1.5">
-          ${p.isBestseller ? `<span class="px-2 py-0.5 rounded-full bg-gold-400 text-charcoal-900 text-[10px] font-extrabold uppercase">Bestseller</span>` : ''}
-          ${p.isNew ? `<span class="px-2 py-0.5 rounded-full bg-violet-600 text-white text-[10px] font-bold uppercase">New Arrival</span>` : ''}
-          ${discount > 5 ? `<span class="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold">-${discount}% OFF</span>` : ''}
+      <div class="relative min-h-[340px] md:min-h-[500px] flex items-center justify-center p-6 sm:p-8 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none bg-gradient-to-b from-cream-100 to-cream-200 border-b md:border-b-0 md:border-r border-gold-200 overflow-hidden">
+        <img 
+          src="${p.image}" 
+          alt="${p.name}" 
+          class="max-h-[320px] md:max-h-[460px] w-auto max-w-full object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
+        >
+        <div class="absolute top-4 left-4 flex flex-col gap-1.5 z-10">
+          ${p.isBestseller ? `<span class="px-2.5 py-1 rounded-full bg-gold-400 text-charcoal-900 text-[10px] font-extrabold uppercase shadow-sm">Bestseller</span>` : ''}
+          ${p.isNew ? `<span class="px-2.5 py-1 rounded-full bg-violet-600 text-white text-[10px] font-bold uppercase shadow-sm">New Arrival</span>` : ''}
+          ${discount > 5 ? `<span class="px-2.5 py-1 rounded-full bg-rose-500 text-white text-[10px] font-bold shadow-sm">-${discount}% OFF</span>` : ''}
         </div>
-        <button id="close-quickview-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/90 text-charcoal-700 hover:text-charcoal-950 flex items-center justify-center border border-gold-200 hover:bg-charcoal-900 hover:text-white transition-colors shadow-md">
-          <i class="fas fa-times text-xs"></i>
+        <button id="close-quickview-btn" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/95 text-charcoal-700 hover:text-charcoal-950 flex items-center justify-center border border-gold-200 hover:bg-charcoal-900 hover:text-white transition-all shadow-md z-10" title="Close">
+          <i class="fas fa-times text-sm"></i>
         </button>
       </div>
 
@@ -2319,9 +2333,11 @@ function renderProductGrid() {
     emptyState?.classList.add('hidden');
     grid.innerHTML = perfumes.map(renderProductCard).join('');
 
-    grid.querySelectorAll('.quick-view-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const p = store.perfumes.find(x => x.id === btn.dataset.id);
+    grid.querySelectorAll('.quick-view-btn, .product-image-click, .product-title-click').forEach(elem => {
+      elem.addEventListener('click', (e) => {
+        // Prevent opening modal if clicking wishlist button inside the image container
+        if (e.target.closest('.wishlist-toggle')) return;
+        const p = store.perfumes.find(x => x.id === elem.dataset.id);
         if (p) renderQuickView(p);
       });
     });

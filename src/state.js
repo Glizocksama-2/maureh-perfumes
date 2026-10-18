@@ -25,7 +25,7 @@ class Store {
     this.currency = localStorage.getItem("maureh_currency") || "KES";
     
     // Admin & Vendor Auth State
-    this.isAdminAuthenticated = localStorage.getItem("maureh_admin_auth") === "true";
+    this.isAdminAuthenticated = Boolean(localStorage.getItem("maureh_admin_auth"));
     this.activeVendorUser = JSON.parse(localStorage.getItem("maureh_vendor_user")) || null;
 
     // Load or initialize dynamic perfumes catalog (v10 real inventory)
@@ -169,20 +169,37 @@ class Store {
     const supabase = getSupabase();
 
     if (supabase) {
-      // Authenticate directly against Supabase Auth using the admin email and password
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password
-      });
-      if (!error && data.user) {
-        this.isAdminAuthenticated = true;
-        localStorage.setItem("maureh_admin_auth", "supabase");
-        this.toast("Admin access unlocked. Welcome back!", "success");
-        this.notify();
-        return true;
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: password
+        });
+
+        if (!error && data?.user) {
+          this.isAdminAuthenticated = true;
+          localStorage.setItem("maureh_admin_auth", "supabase");
+          this.toast("Admin access unlocked. Welcome back!", "success");
+          this.notify();
+          return { success: true };
+        }
+
+        let msg = error?.message || "Invalid credentials";
+        const lower = msg.toLowerCase();
+        if (lower.includes("email not confirmed")) {
+          msg = "Email not confirmed! In Supabase Dashboard → Authentication → Users, click '...' next to the user and choose 'Confirm user', or disable 'Confirm email' under Auth Settings.";
+        } else if (lower.includes("invalid login credentials")) {
+          msg = "Invalid email or password. Please verify the credentials you created in Supabase Authentication.";
+        } else if (lower.includes("api key") || lower.includes("jwt")) {
+          msg = "Invalid Supabase API key. Note: The Anon key is the long token starting with 'eyJ...', not the Project ID.";
+        }
+
+        this.toast(`Login failed: ${msg}`, "error");
+        return { success: false, message: msg };
+      } catch (err) {
+        const msg = err.message || "Failed to reach Supabase. Check your internet connection and Supabase URL.";
+        this.toast(`Login error: ${msg}`, "error");
+        return { success: false, message: msg };
       }
-      this.toast(`Login failed: ${error?.message || "Invalid credentials"}`, "error");
-      return false;
     }
 
     // Offline / fallback: check env var if configured
@@ -192,11 +209,12 @@ class Store {
       localStorage.setItem("maureh_admin_auth", "env");
       this.toast("Admin access unlocked (local mode).", "success");
       this.notify();
-      return true;
+      return { success: true };
     }
 
-    this.toast("Supabase connection required. Please connect Supabase in Cloud DB settings or check your password.", "error");
-    return false;
+    const notConnectedMsg = "Supabase is not connected. Click 'Supabase Setup' below to enter your Supabase Project URL and Anon Key.";
+    this.toast(notConnectedMsg, "error");
+    return { success: false, message: notConnectedMsg };
   }
 
   logoutAdmin() {

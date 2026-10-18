@@ -1,4 +1,5 @@
 import { store, CURRENCIES, VENDOR_ACCOUNTS } from './state.js';
+import { getSupabaseCredentials } from './supabase.js';
 import { VENDORS } from './data/vendors.js';
 import { REVIEWS } from './data/reviews.js';
 
@@ -1179,15 +1180,36 @@ function renderAdminPortal() {
   if (!modal) return;
 
   if (!store.isAdminAuthenticated) {
+    const { supabaseUrl, isConfigured } = getSupabaseCredentials();
+
     // Dedicated Single-Store Admin Authentication (Supabase Auth)
     modal.innerHTML = `
-      <div class="p-6 sm:p-8 max-w-md mx-auto text-center space-y-6 my-auto">
+      <div class="p-6 sm:p-8 max-w-md mx-auto text-center space-y-5 my-auto">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-gold-50 border border-gold-200 flex items-center justify-center text-gold-500 text-2xl shadow-md">
           <i class="fas fa-lock"></i>
         </div>
         <div>
           <h3 class="font-serif text-2xl font-bold text-charcoal-900">Maureh Admin Login</h3>
           <p class="text-xs text-charcoal-500 mt-1">Direct store management &amp; inventory controls</p>
+        </div>
+
+        <!-- Supabase Connection Status Pill -->
+        <div class="p-3 rounded-xl ${isConfigured ? 'bg-emerald-50 border border-emerald-200 text-emerald-800' : 'bg-amber-50 border border-amber-200 text-amber-800'} text-xs flex items-center justify-between text-left">
+          <div class="flex items-center gap-2 min-w-0 pr-2">
+            <i class="fas ${isConfigured ? 'fa-circle-check text-emerald-600' : 'fa-triangle-exclamation text-amber-600'} text-sm flex-shrink-0"></i>
+            <div class="min-w-0">
+              <span class="font-bold block truncate">${isConfigured ? 'Supabase Connected' : 'Supabase Not Connected'}</span>
+              <p class="text-[10px] text-charcoal-500 truncate">${isConfigured ? (supabaseUrl.replace(/^https?:\/\//, '')) : 'Cloud database credentials needed'}</p>
+            </div>
+          </div>
+          <button type="button" id="login-open-cloud-btn" class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white hover:bg-gold-50 text-charcoal-800 border border-gold-200 flex-shrink-0 shadow-sm transition-all">
+            ${isConfigured ? 'Change' : 'Connect'}
+          </button>
+        </div>
+
+        <!-- In-Form Error Alert -->
+        <div id="admin-login-error" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs text-left space-y-1">
+          <p id="admin-login-error-text" class="font-medium"></p>
         </div>
 
         <form id="admin-login-form" class="space-y-4 text-left">
@@ -1217,11 +1239,20 @@ function renderAdminPortal() {
             <button type="button" id="close-admin-btn-login" class="flex-1 py-3 rounded-xl border border-gold-200 text-charcoal-600 hover:bg-cream-100 text-xs font-bold uppercase tracking-wider">
               Cancel
             </button>
-            <button type="submit" class="flex-1 py-3 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-md">
+            <button type="submit" id="admin-login-submit-btn" class="flex-1 py-3 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-md">
               Sign In
             </button>
           </div>
         </form>
+
+        <div class="text-[11px] text-charcoal-500 bg-cream-50 p-3 rounded-xl border border-gold-100 text-left space-y-1">
+          <p class="font-bold text-charcoal-800"><i class="fas fa-circle-question text-gold-500"></i> Troubleshooting Tips:</p>
+          <ul class="list-disc pl-4 space-y-0.5 text-[10.5px]">
+            <li><strong>Not Connected?</strong> Click <em>Connect</em> above to enter your Supabase Project URL &amp; Anon Key.</li>
+            <li><strong>"Email not confirmed"?</strong> In Supabase Dashboard → Authentication → Users, click <strong>...</strong> next to the user and choose <strong>Confirm email</strong>.</li>
+            <li><strong>Password:</strong> Must match the password created under Supabase Authentication → Users.</li>
+          </ul>
+        </div>
       </div>
     `;
 
@@ -1229,13 +1260,36 @@ function renderAdminPortal() {
       closeModal('admin-modal-overlay', 'admin-modal');
     });
 
+    document.getElementById('login-open-cloud-btn')?.addEventListener('click', () => {
+      renderCloudSyncModal();
+    });
+
     document.getElementById('admin-login-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('admin-email-input')?.value || 'machariamoureen78@gmail.com';
       const pass = document.getElementById('admin-pass-input')?.value;
-      const ok = await store.loginAdmin(pass, email);
-      if (ok) {
+      const submitBtn = document.getElementById('admin-login-submit-btn');
+      const errorContainer = document.getElementById('admin-login-error');
+      const errorText = document.getElementById('admin-login-error-text');
+
+      if (errorContainer) errorContainer.classList.add('hidden');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+      }
+
+      const res = await store.loginAdmin(pass, email);
+      if (res === true || res?.success) {
         renderAdminPortal();
+      } else {
+        if (errorContainer && errorText) {
+          errorText.textContent = res?.message || 'Login failed. Please verify your credentials or Supabase connection.';
+          errorContainer.classList.remove('hidden');
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Sign In';
+        }
       }
     });
 

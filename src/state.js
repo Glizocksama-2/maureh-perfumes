@@ -191,12 +191,17 @@ class Store {
           msg = "Invalid email or password. Please verify the credentials you created in Supabase Authentication.";
         } else if (lower.includes("api key") || lower.includes("jwt")) {
           msg = "Invalid Supabase API key. Note: The Anon key is the long token starting with 'eyJ...', not the Project ID.";
+        } else if (lower.includes("failed to fetch")) {
+          msg = "Network error ('Failed to fetch'). Cannot reach Supabase. Please verify your Supabase Project URL (must be https://your-project-id.supabase.co without '<' or '>') and that your project is active.";
         }
 
         this.toast(`Login failed: ${msg}`, "error");
         return { success: false, message: msg };
       } catch (err) {
-        const msg = err.message || "Failed to reach Supabase. Check your internet connection and Supabase URL.";
+        let msg = err.message || "";
+        if (msg.toLowerCase().includes("failed to fetch") || !msg) {
+          msg = "Network error ('Failed to fetch'). The browser could not connect to your Supabase Project URL. Please click 'Change' above and check: 1) URL is https://your-project-id.supabase.co (without '<' or '>'), 2) Project is active (not paused in Supabase), 3) The Anon key starts with 'eyJ...'.";
+        }
         this.toast(`Login error: ${msg}`, "error");
         return { success: false, message: msg };
       }

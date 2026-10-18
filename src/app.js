@@ -1462,43 +1462,52 @@ function renderCloudSyncModal() {
         <div>
           <label class="block font-semibold text-charcoal-700 mb-1">Supabase Project URL *</label>
           <input 
-            type="url" 
+            type="text" 
             id="supabase-url-input" 
             value="${supabaseUrl || ''}" 
-            placeholder="https://xyzcompany.supabase.co" 
+            placeholder="https://abcdefghijkl.supabase.co" 
             required
-            class="w-full bg-cream-100 border border-gold-200 rounded-lg p-2.5 text-xs text-charcoal-800 focus:border-gold-400"
+            class="w-full bg-cream-100 border border-gold-200 rounded-lg p-2.5 text-xs text-charcoal-800 focus:border-gold-400 font-mono"
           >
-          <p class="text-[10px] text-charcoal-400 mt-0.5">From your Supabase Project Settings → API → Project URL</p>
+          <p class="text-[10px] text-charcoal-500 mt-1">
+            📍 Found in Supabase: <strong>Project Settings → API → Project URL</strong> (must look like <code class="text-gold-700 font-bold">https://yourprojectid.supabase.co</code> — do not include &lt;&gt; brackets).
+          </p>
         </div>
 
         <div>
           <label class="block font-semibold text-charcoal-700 mb-1">Supabase Anon / Public API Key *</label>
-          <input 
-            type="password" 
+          <textarea 
+            rows="3"
             id="supabase-key-input" 
-            value="${supabaseKey || ''}" 
             placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
             required
-            class="w-full bg-cream-100 border border-gold-200 rounded-lg p-2.5 text-xs text-charcoal-800 font-mono focus:border-gold-400"
-          >
-          <p class="text-[10px] text-charcoal-400 mt-0.5">From Project Settings → API → Project API Keys → <code class="font-bold text-gold-600">anon public</code></p>
+            class="w-full bg-cream-100 border border-gold-200 rounded-lg p-2.5 text-xs text-charcoal-800 font-mono focus:border-gold-400 resize-none break-all"
+          >${supabaseKey || ''}</textarea>
+          <p class="text-[10px] text-charcoal-500 mt-1">
+            🔑 Found in Supabase: <strong>Project Settings → API → Project API Keys → <code class="font-bold text-gold-700">anon public</code></strong>.<br>
+            <span class="text-amber-700 font-semibold">Important: This is the long key starting with <code>eyJ...</code>, NOT the short Project ID.</span>
+          </p>
         </div>
 
         <div class="pt-2 border-t border-gold-100 flex flex-col gap-2">
-          <button type="submit" class="w-full py-3 rounded-lg bg-charcoal-900 hover:bg-charcoal-800 text-white font-extrabold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2">
-            <i class="fas fa-plug text-gold-300"></i> Connect to Supabase
+          <button type="submit" id="save-cloud-btn" class="w-full py-3 rounded-lg bg-charcoal-900 hover:bg-charcoal-800 text-white font-extrabold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2">
+            <i class="fas fa-plug text-gold-300"></i> Save &amp; Connect to Supabase
           </button>
 
           <button type="button" id="supabase-seed-btn" class="w-full py-2.5 rounded-lg border border-gold-400 bg-gold-50 hover:bg-gold-100 text-charcoal-900 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all">
-            <i class="fas fa-seedling text-emerald-600"></i> Seed 14 Default Perfumes to Supabase
+            <i class="fas fa-seedling text-emerald-600"></i> Seed Default Fragrances to Supabase
+          </button>
+
+          <button type="button" id="back-to-login-btn" class="w-full py-2.5 rounded-lg border border-gold-200 bg-white hover:bg-cream-100 text-charcoal-700 font-semibold text-xs transition-all">
+            ← Back to Admin Login
           </button>
         </div>
       </form>
 
       <div class="text-[11px] text-charcoal-500 bg-cream-100 p-3 rounded-xl border border-gold-200 space-y-1">
-        <p class="font-bold text-charcoal-800"><i class="fas fa-book-bookmark text-gold-500"></i> Quick Setup Tip:</p>
-        <p>Make sure you have executed the tables script from <code class="bg-white px-1 rounded text-gold-700 font-mono font-bold">supabase_schema.sql</code> in your Supabase SQL Editor first.</p>
+        <p class="font-bold text-charcoal-800"><i class="fas fa-book-bookmark text-gold-500"></i> Quick Setup Checklist:</p>
+        <p>1. In Supabase Dashboard → <strong>SQL Editor</strong>, execute <code class="bg-white px-1 rounded text-gold-700 font-mono font-bold">supabase_schema.sql</code>.</p>
+        <p>2. In Supabase Dashboard → <strong>Authentication → Users</strong>, add your admin user (<code class="bg-white px-1 rounded text-gold-700 font-bold">machariamoureen78@gmail.com</code>) and make sure email is confirmed.</p>
       </div>
     </div>
   `;
@@ -1507,15 +1516,31 @@ function renderCloudSyncModal() {
     renderAdminPortal();
   });
 
+  document.getElementById('back-to-login-btn')?.addEventListener('click', () => {
+    renderAdminPortal();
+  });
+
   document.getElementById('supabase-config-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const url = document.getElementById('supabase-url-input')?.value;
     const key = document.getElementById('supabase-key-input')?.value;
+    const submitBtn = document.getElementById('save-cloud-btn');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+    }
     const success = await store.connectSupabase(url, key);
     if (success) {
-      renderCloudSyncModal();
       renderProductGrid();
       populateBrandFilter();
+      setTimeout(() => {
+        renderAdminPortal();
+      }, 700);
+    } else {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-plug text-gold-300"></i> Save &amp; Connect to Supabase';
+      }
     }
   });
 

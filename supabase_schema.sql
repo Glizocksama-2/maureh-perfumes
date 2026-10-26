@@ -1,5 +1,5 @@
 -- ==============================================================================
--- MAUREH PERFUMES - SUPABASE DATABASE SCHEMA
+-- MAUREH PERFUMES - PRODUCTION SUPABASE DATABASE SCHEMA & RLS SECURITY POLICIES
 -- Run this script in your Supabase SQL Editor: (https://app.supabase.com)
 -- ==============================================================================
 
@@ -65,37 +65,102 @@ CREATE TABLE IF NOT EXISTS public.vendors (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Enable Row Level Security (RLS)
+-- 4. Enable Row Level Security (RLS) on all tables
 ALTER TABLE public.perfumes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vendors  ENABLE ROW LEVEL SECURITY;
 
--- ── PERFUMES ──────────────────────────────────────────────────────────────────
--- Public: anyone can read the catalog
+-- Clean existing policies if re-running
+DROP POLICY IF EXISTS "Public can read perfumes" ON public.perfumes;
+DROP POLICY IF EXISTS "Authenticated users can insert perfumes" ON public.perfumes;
+DROP POLICY IF EXISTS "Authenticated users can update perfumes" ON public.perfumes;
+DROP POLICY IF EXISTS "Authenticated users can delete perfumes" ON public.perfumes;
+
+DROP POLICY IF EXISTS "Public can insert orders" ON public.orders;
+DROP POLICY IF EXISTS "Service role can read orders" ON public.orders;
+DROP POLICY IF EXISTS "Service role can update orders" ON public.orders;
+DROP POLICY IF EXISTS "Authenticated admin can read orders" ON public.orders;
+DROP POLICY IF EXISTS "Authenticated admin can update orders" ON public.orders;
+
+DROP POLICY IF EXISTS "Public can read vendors" ON public.vendors;
+DROP POLICY IF EXISTS "Authenticated admin can mutate vendors" ON public.vendors;
+
+-- ── PERFUMES POLICIES ──────────────────────────────────────────────────────────
+-- Public: Anyone (authenticated or anonymous) can view the perfume catalog
 CREATE POLICY "Public can read perfumes"
-  ON public.perfumes FOR SELECT USING (true);
+  ON public.perfumes FOR SELECT
+  USING (true);
 
--- Admin writes: only Supabase service-role (server-side) or authenticated admin can mutate
--- Use Supabase Admin API / Edge Functions with the service-role key for INSERT/UPDATE/DELETE.
--- DO NOT grant public INSERT/UPDATE/DELETE — doing so lets anyone wipe or tamper the catalog.
+-- Admin writes: Only logged-in admin users (authenticated role) can add/edit/delete fragrances
+CREATE POLICY "Authenticated users can insert perfumes"
+  ON public.perfumes FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
 
--- ── ORDERS ────────────────────────────────────────────────────────────────────
--- Public: customers can place orders
+CREATE POLICY "Authenticated users can update perfumes"
+  ON public.perfumes FOR UPDATE
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "Authenticated users can delete perfumes"
+  ON public.perfumes FOR DELETE
+  TO authenticated
+  USING (true);
+
+-- ── ORDERS POLICIES ───────────────────────────────────────────────────────────
+-- Public: Any customer can submit/insert their order at checkout
 CREATE POLICY "Public can insert orders"
-  ON public.orders FOR INSERT WITH CHECK (true);
+  ON public.orders FOR INSERT
+  WITH CHECK (true);
 
--- Only service-role (backend / Supabase dashboard) can read or update orders
-CREATE POLICY "Service role can read orders"
-  ON public.orders FOR SELECT USING (auth.role() = 'service_role');
+-- Admin & Service Role: Only logged in Admin can view or update customer orders (protects PII)
+CREATE POLICY "Authenticated admin can read orders"
+  ON public.orders FOR SELECT
+  TO authenticated
+  USING (true);
 
-CREATE POLICY "Service role can update orders"
-  ON public.orders FOR UPDATE USING (auth.role() = 'service_role');
+CREATE POLICY "Authenticated admin can update orders"
+  ON public.orders FOR UPDATE
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
 
--- ── VENDORS ───────────────────────────────────────────────────────────────────
+-- ── VENDORS POLICIES ──────────────────────────────────────────────────────────
+-- Public can read vendor profiles
 CREATE POLICY "Public can read vendors"
-  ON public.vendors FOR SELECT USING (true);
+  ON public.vendors FOR SELECT
+  USING (true);
 
--- 5. Enable Realtime Replication
-ALTER PUBLICATION supabase_realtime ADD TABLE public.perfumes;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
+-- Admin can mutate vendors
+CREATE POLICY "Authenticated admin can mutate vendors"
+  ON public.vendors FOR ALL
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
 
+-- 5. Enable Realtime Replication for instant storefront updates
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables 
+    WHERE pubname = 'supabase_realtime' AND tablename = 'perfumes'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.perfumes;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables 
+    WHERE pubname = 'supabase_realtime' AND tablename = 'orders'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
+  END IF;
+END $$;
+
+-- ==============================================================================
+-- FRONTEND SECURITY ARCHITECTURE NOTE:
+-- * Frontend utilizes STRICTLY the Supabase "anon" public key (eyJ...).
+-- * The Supabase "service_role" secret key is NEVER bundled or exposed on client.
+-- * Row Level Security (RLS) guarantees that anonymous users cannot alter catalog
+--   data or harvest other customers' orders.
+-- ==============================================================================

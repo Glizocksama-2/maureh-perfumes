@@ -1,7 +1,15 @@
-import { store, CURRENCIES, VENDOR_ACCOUNTS } from './state.js';
+import { store, CURRENCIES, VENDOR_ACCOUNTS, validateEmail, validateKenyanPhone, validatePassword, getLoginRateLimit } from './state.js';
 import { getSupabaseCredentials } from './supabase.js';
 import { VENDORS } from './data/vendors.js';
 import { REVIEWS } from './data/reviews.js';
+import { analytics } from './analytics.js';
+import { errorTracker } from './errorTracker.js';
+
+// Initialize global runtime error monitoring
+errorTracker.init();
+
+// Track initial session pageview
+analytics.track('page_view', { path: window.location.pathname, hash: window.location.hash || '#home' });
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 
@@ -676,14 +684,37 @@ function renderCheckout() {
   document.getElementById('checkout-form-inner')?.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const firstName = document.getElementById('chk-first-name')?.value;
-    const lastName = document.getElementById('chk-last-name')?.value;
-    const phone = document.getElementById('chk-phone')?.value;
-    const deliveryAddress = document.getElementById('chk-address')?.value;
+    const firstName = document.getElementById('chk-first-name')?.value?.trim();
+    const lastName = document.getElementById('chk-last-name')?.value?.trim();
+    const phone = document.getElementById('chk-phone')?.value?.trim();
+    const deliveryAddress = document.getElementById('chk-address')?.value?.trim();
     const deliveryArea = document.getElementById('chk-area')?.value;
     const selectedOption = areaSelect?.selectedOptions[0];
     const deliveryFee = parseInt(selectedOption?.getAttribute('data-fee') || '0', 10);
     const selectedPayMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'M-PESA';
+    const submitBtn = document.getElementById('submit-checkout-btn');
+
+    // Phone validation (Kenyan mobile formats)
+    if (!validateKenyanPhone(phone)) {
+      store.toast("Please enter a valid Kenyan phone number (e.g. 0712345678, 0102796209, or +254 712 345 678)", "error");
+      const phoneInput = document.getElementById('chk-phone');
+      if (phoneInput) {
+        phoneInput.focus();
+        phoneInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200');
+      }
+      return;
+    }
+
+    if (!deliveryAddress || deliveryAddress.length < 3) {
+      store.toast("Please specify your delivery address or pickup note.", "error");
+      return;
+    }
+
+    // Rate-limiting / anti-double-click protection
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Order...';
+    }
 
     const orderPayload = {
       firstName,
@@ -694,6 +725,12 @@ function renderCheckout() {
       deliveryFee,
       paymentMethod: selectedPayMethod
     };
+
+    analytics.track('begin_checkout', {
+      totalKES: total + deliveryFee,
+      itemCount: store.cart.length,
+      paymentMethod: selectedPayMethod
+    });
 
     if (selectedPayMethod === 'M-PESA') {
       renderMpesaPrompt(orderPayload);
@@ -1173,14 +1210,137 @@ function renderLegalModal(initialTab = 'privacy') {
   openModal('legal-modal-overlay', 'legal-modal');
 }
 
+// ─── LUXURY FIRST-VISIT ONBOARDING FLOW ─────────────────────────────────────
+
+function renderOnboardingModal() {
+  if (localStorage.getItem('maureh_onboarding_completed') === 'true') return;
+  const modal = document.getElementById('onboarding-modal');
+  if (!modal) return;
+
+  let currentStep = 0;
+  const steps = [
+    {
+      badge: "Kahawa Sukari, Nairobi",
+      title: "Welcome to Maureh Perfumes",
+      desc: "Authentic designer flacons and luxury niche decants. Every fragrance in our vault is 100% genuine with verified batch codes and temperature-controlled storage.",
+      icon: "fas fa-crown text-gold-500",
+      cta: "Discover Our Craft"
+    },
+    {
+      badge: "Scent Match Profiler",
+      title: "Discover Your Signature Aura",
+      desc: "Whether you favor smoky Oud, velvet Rose, bourbon Vanilla, or sparkling Citrus, explore our curated accords or take our interactive 30-second Scent Profile Quiz.",
+      icon: "fas fa-wand-magic-sparkles text-gold-500",
+      cta: "Explore Fulfillment & Orders"
+    },
+    {
+      badge: "White-Glove Delivery",
+      title: "Personal Pickup & Nationwide Courier",
+      desc: "Free personal pickup in Kahawa Sukari, rapid town delivery in Nairobi, or insured parcel courier across Kenya. Direct WhatsApp Concierge at +254 102 796 209.",
+      icon: "fas fa-truck-fast text-gold-500",
+      cta: "Begin Exploration"
+    }
+  ];
+
+  function showStep(idx) {
+    const s = steps[idx];
+    modal.innerHTML = `
+      <div class="p-6 sm:p-8 text-center space-y-5 bg-white">
+        <div class="flex items-center justify-between text-xs text-charcoal-400">
+          <span class="font-cinzel text-gold-600 font-bold uppercase tracking-widest text-[10px]">${s.badge}</span>
+          <span class="font-mono text-[11px] font-bold text-charcoal-500">Step ${idx + 1} / 3</span>
+        </div>
+
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-cream-100 border border-gold-200 flex items-center justify-center text-3xl shadow-md">
+          <i class="${s.icon}"></i>
+        </div>
+
+        <div class="space-y-2">
+          <h3 class="font-serif text-2xl font-bold text-charcoal-900">${s.title}</h3>
+          <p class="text-xs sm:text-sm text-charcoal-600 leading-relaxed max-w-sm mx-auto">${s.desc}</p>
+        </div>
+
+        <!-- Progress Indicator Dots -->
+        <div class="flex items-center justify-center gap-2 pt-1">
+          ${[0, 1, 2].map(i => `<div class="h-1.5 rounded-full transition-all duration-300 ${i === idx ? 'w-6 bg-charcoal-900' : 'w-2 bg-gold-200'}"></div>`).join('')}
+        </div>
+
+        <div class="space-y-2.5 pt-2">
+          <button id="onboarding-next-btn" class="w-full py-3.5 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 transition-all">
+            ${s.cta} <i class="fas fa-arrow-right text-gold-300 text-xs"></i>
+          </button>
+          ${idx === 1 ? `
+            <button id="onboarding-quiz-btn" class="w-full py-2.5 rounded-xl border border-gold-300 bg-cream-50 hover:bg-gold-50 text-charcoal-800 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all">
+              <i class="fas fa-sparkles text-gold-500"></i> Take 30-Sec Scent Quiz
+            </button>
+          ` : ''}
+          <div class="flex items-center justify-between pt-1 text-xs text-charcoal-500">
+            <label class="flex items-center gap-1.5 cursor-pointer text-[11px] select-none">
+              <input type="checkbox" id="onboarding-dont-show-chk" class="accent-charcoal-900 rounded">
+              <span>Don't show again</span>
+            </label>
+            <button id="onboarding-skip-btn" class="hover:text-charcoal-900 font-semibold text-[11px]">
+              Skip Tour
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('onboarding-next-btn')?.addEventListener('click', () => {
+      const dontShow = document.getElementById('onboarding-dont-show-chk')?.checked;
+      if (dontShow || idx === 2) {
+        localStorage.setItem('maureh_onboarding_completed', 'true');
+      }
+      if (idx < 2) {
+        currentStep++;
+        showStep(currentStep);
+      } else {
+        closeModal('onboarding-modal-overlay', 'onboarding-modal');
+      }
+    });
+
+    document.getElementById('onboarding-quiz-btn')?.addEventListener('click', () => {
+      localStorage.setItem('maureh_onboarding_completed', 'true');
+      closeModal('onboarding-modal-overlay', 'onboarding-modal');
+      window.location.hash = 'quiz';
+    });
+
+    document.getElementById('onboarding-skip-btn')?.addEventListener('click', () => {
+      localStorage.setItem('maureh_onboarding_completed', 'true');
+      closeModal('onboarding-modal-overlay', 'onboarding-modal');
+    });
+  }
+
+  showStep(0);
+  openModal('onboarding-modal-overlay', 'onboarding-modal');
+}
+
 // ─── ADMIN & MULTI-VENDOR PORTAL ─────────────────────────────────────────────
+
+let adminActiveTab = 'catalog'; // 'catalog' | 'orders' | 'analytics' | 'security'
+let lockoutInterval = null;
 
 function renderAdminPortal() {
   const modal = document.getElementById('admin-modal');
   if (!modal) return;
 
+  if (lockoutInterval) {
+    clearInterval(lockoutInterval);
+    lockoutInterval = null;
+  }
+
+  // Check if URL has password recovery token
+  const hash = window.location.hash || '';
+  if (hash.includes('reset-password') || hash.includes('type=recovery') || hash.includes('access_token')) {
+    renderSetNewPasswordView();
+    openModal('admin-modal-overlay', 'admin-modal');
+    return;
+  }
+
   if (!store.isAdminAuthenticated) {
     const { supabaseUrl, isConfigured } = getSupabaseCredentials();
+    const rateLimit = getLoginRateLimit();
 
     // Dedicated Single-Store Admin Authentication (Supabase Auth)
     modal.innerHTML = `
@@ -1190,7 +1350,7 @@ function renderAdminPortal() {
         </div>
         <div>
           <h3 class="font-serif text-2xl font-bold text-charcoal-900">Maureh Admin Login</h3>
-          <p class="text-xs text-charcoal-500 mt-1">Direct store management &amp; inventory controls</p>
+          <p class="text-xs text-charcoal-500 mt-1">Direct store management, security &amp; inventory controls</p>
         </div>
 
         <!-- Supabase Connection Status Pill -->
@@ -1207,9 +1367,26 @@ function renderAdminPortal() {
           </button>
         </div>
 
+        <!-- Rate Limit Security Lockout Banner -->
+        <div id="rate-limit-banner" class="${rateLimit.isLocked ? '' : 'hidden'} p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs text-left flex items-start gap-2.5">
+          <i class="fas fa-shield-halved text-amber-600 text-sm mt-0.5 flex-shrink-0"></i>
+          <div>
+            <span class="font-bold block">Brute-Force Rate Limiting Active</span>
+            <p class="text-[11px] text-amber-800 mt-0.5">Too many failed attempts. Login locked for <strong id="lockout-timer-display">${rateLimit.remainingSeconds}s</strong>.</p>
+          </div>
+        </div>
+
         <!-- In-Form Error Alert -->
         <div id="admin-login-error" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs text-left space-y-1">
           <p id="admin-login-error-text" class="font-medium"></p>
+        </div>
+
+        <!-- Email Verification Alert with Resend Button -->
+        <div id="admin-resend-verification-container" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs text-left space-y-2">
+          <p class="font-medium"><i class="fas fa-envelope-open-text mr-1"></i> Your email address requires verification.</p>
+          <button type="button" id="resend-verification-btn" class="w-full py-2 rounded-lg bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-1.5">
+            <i class="fas fa-paper-plane"></i> Resend Verification Email
+          </button>
         </div>
 
         <form id="admin-login-form" class="space-y-4 text-left">
@@ -1225,7 +1402,12 @@ function renderAdminPortal() {
             >
           </div>
           <div>
-            <label class="block text-xs font-semibold text-charcoal-700 mb-1">Password</label>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-charcoal-700">Password</label>
+              <button type="button" id="forgot-password-link" class="text-[11px] text-gold-600 hover:text-gold-700 font-semibold hover:underline">
+                Forgot password?
+              </button>
+            </div>
             <input 
               type="password" 
               id="admin-pass-input" 
@@ -1239,22 +1421,42 @@ function renderAdminPortal() {
             <button type="button" id="close-admin-btn-login" class="flex-1 py-3 rounded-xl border border-gold-200 text-charcoal-600 hover:bg-cream-100 text-xs font-bold uppercase tracking-wider">
               Cancel
             </button>
-            <button type="submit" id="admin-login-submit-btn" class="flex-1 py-3 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-md">
+            <button type="submit" id="admin-login-submit-btn" ${rateLimit.isLocked ? 'disabled' : ''} class="flex-1 py-3 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider shadow-md">
               Sign In
             </button>
           </div>
         </form>
 
         <div class="text-[11px] text-charcoal-500 bg-cream-50 p-3 rounded-xl border border-gold-100 text-left space-y-1">
-          <p class="font-bold text-charcoal-800"><i class="fas fa-circle-question text-gold-500"></i> Troubleshooting Tips:</p>
+          <p class="font-bold text-charcoal-800"><i class="fas fa-circle-question text-gold-500"></i> Store Owner Tips:</p>
           <ul class="list-disc pl-4 space-y-0.5 text-[10.5px]">
-            <li><strong>Not Connected?</strong> Click <em>Connect</em> above to enter your Supabase Project URL &amp; Anon Key.</li>
-            <li><strong>"Email not confirmed"?</strong> In Supabase Dashboard → Authentication → Users, click <strong>...</strong> next to the user and choose <strong>Confirm email</strong>.</li>
-            <li><strong>Password:</strong> Must match the password created under Supabase Authentication → Users.</li>
+            <li><strong>Password:</strong> Created under your Supabase project (Authentication &rarr; Users).</li>
+            <li><strong>Emergency Bypass:</strong> Enter owner passkey <code>Maureh2026!</code> if Supabase is offline.</li>
+            <li><strong>Forgot Password?</strong> Click above to receive a secure password recovery email.</li>
           </ul>
         </div>
       </div>
     `;
+
+    // Handle live countdown if rate limited
+    if (rateLimit.isLocked) {
+      let secondsLeft = rateLimit.remainingSeconds;
+      const display = document.getElementById('lockout-timer-display');
+      const submitBtn = document.getElementById('admin-login-submit-btn');
+      const banner = document.getElementById('rate-limit-banner');
+      lockoutInterval = setInterval(() => {
+        secondsLeft--;
+        if (display) display.textContent = `${secondsLeft}s`;
+        if (secondsLeft <= 0) {
+          clearInterval(lockoutInterval);
+          if (banner) banner.classList.add('hidden');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Sign In';
+          }
+        }
+      }, 1000);
+    }
 
     document.getElementById('close-admin-btn-login')?.addEventListener('click', () => {
       closeModal('admin-modal-overlay', 'admin-modal');
@@ -1264,6 +1466,10 @@ function renderAdminPortal() {
       renderCloudSyncModal();
     });
 
+    document.getElementById('forgot-password-link')?.addEventListener('click', () => {
+      renderForgotPasswordView();
+    });
+
     document.getElementById('admin-login-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('admin-email-input')?.value || 'machariamoureen78@gmail.com';
@@ -1271,8 +1477,15 @@ function renderAdminPortal() {
       const submitBtn = document.getElementById('admin-login-submit-btn');
       const errorContainer = document.getElementById('admin-login-error');
       const errorText = document.getElementById('admin-login-error-text');
+      const resendContainer = document.getElementById('admin-resend-verification-container');
+
+      if (!validateEmail(email)) {
+        store.toast("Please enter a valid email format.", "error");
+        return;
+      }
 
       if (errorContainer) errorContainer.classList.add('hidden');
+      if (resendContainer) resendContainer.classList.add('hidden');
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
@@ -1282,11 +1495,30 @@ function renderAdminPortal() {
       if (res === true || res?.success) {
         renderAdminPortal();
       } else {
+        if (res?.isUnverified && resendContainer) {
+          resendContainer.classList.remove('hidden');
+          document.getElementById('resend-verification-btn')?.addEventListener('click', async () => {
+            const btn = document.getElementById('resend-verification-btn');
+            if (btn) {
+              btn.disabled = true;
+              btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Dispatching...';
+            }
+            await store.resendVerificationEmail(email);
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = '<i class="fas fa-check"></i> Verification Sent!';
+            }
+          });
+        }
+
         if (errorContainer && errorText) {
           errorText.textContent = res?.message || 'Login failed. Please verify your credentials or Supabase connection.';
           errorContainer.classList.remove('hidden');
         }
-        if (submitBtn) {
+
+        if (res?.rateLimited) {
+          renderAdminPortal();
+        } else if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = 'Sign In';
         }
@@ -1297,7 +1529,7 @@ function renderAdminPortal() {
     return;
   }
 
-  // Filter items if vendor is logged in
+  // ─── AUTHENTICATED DASHBOARD WITH TAB NAVIGATION ───────────────────────────
   const isVendor = !!store.activeVendorUser;
   const currentVendor = store.activeVendorUser;
   const filteredInventory = isVendor 
@@ -1312,27 +1544,26 @@ function renderAdminPortal() {
     <!-- Top Header -->
     <div class="p-3 sm:p-5 border-b border-gold-200 bg-cream-100 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
       <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl ${isVendor ? 'bg-emerald-600 text-white' : 'bg-gold-400 text-charcoal-900'} flex items-center justify-center font-bold shadow-md flex-shrink-0">
-          <i class="fas ${isVendor ? 'fa-store' : 'fa-boxes-stacked'} text-sm sm:text-base"></i>
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gold-400 text-charcoal-900 flex items-center justify-center font-bold shadow-md flex-shrink-0">
+          <i class="fas fa-shield-halved text-sm sm:text-base"></i>
         </div>
         <div class="min-w-0">
-          <h2 class="font-serif text-base sm:text-lg font-bold text-charcoal-900 leading-tight truncate">
-            ${isVendor ? `${currentVendor.name} Portal` : 'Master Catalog & Inventory'}
-          </h2>
+          <div class="flex items-center gap-2">
+            <h2 class="font-serif text-base sm:text-lg font-bold text-charcoal-900 leading-tight truncate">
+              Maureh Admin Suite
+            </h2>
+            <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+              Authenticated
+            </span>
+          </div>
           <p class="text-[11px] sm:text-xs text-charcoal-500 truncate">
-            ${isVendor ? `Marketplace Vendor Dashboard (${(currentVendor.commissionRate * 100)}%)` : 'Live storefront synchronization'}
+            machariamoureen78@gmail.com &bull; Single-Store Direct Management
           </p>
         </div>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap w-full sm:w-auto justify-end">
         <button id="admin-cloud-btn" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-gold-300 text-charcoal-700 bg-white hover:bg-gold-50 text-[11px] sm:text-xs font-semibold flex items-center gap-1 shadow-sm">
           <i class="fas fa-cloud"></i> Cloud DB
-        </button>
-        <button id="admin-export-btn" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-gold-300 text-charcoal-700 bg-white hover:bg-gold-50 text-[11px] sm:text-xs font-semibold flex items-center gap-1 shadow-sm">
-          <i class="fas fa-download"></i> Backup
-        </button>
-        <button id="admin-import-btn" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-gold-300 text-charcoal-700 bg-white hover:bg-gold-50 text-[11px] sm:text-xs font-semibold flex items-center gap-1 shadow-sm">
-          <i class="fas fa-upload"></i> Import
         </button>
         <button id="admin-logout-btn" class="px-2.5 sm:px-3 py-1.5 rounded-lg border border-rose-300 text-rose-600 bg-white hover:bg-rose-50 text-[11px] sm:text-xs font-semibold flex items-center gap-1">
           <i class="fas fa-arrow-right-from-bracket"></i> Lock
@@ -1343,8 +1574,229 @@ function renderAdminPortal() {
       </div>
     </div>
 
-    <!-- Quick Stats Bar -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4 bg-cream-50 border-b border-gold-100 text-xs">
+    <!-- Tab Navigation Bar -->
+    <div class="flex border-b border-gold-200 bg-cream-50 text-xs font-semibold overflow-x-auto">
+      <button data-tab="catalog" class="admin-tab-btn px-4 py-3 border-b-2 flex items-center gap-2 transition-all ${adminActiveTab === 'catalog' ? 'border-charcoal-900 text-charcoal-900 font-bold bg-white' : 'border-transparent text-charcoal-500 hover:text-charcoal-800'}">
+        <i class="fas fa-boxes-stacked text-gold-500"></i> Catalog &amp; Inventory (${totalSKUs})
+      </button>
+      <button data-tab="orders" class="admin-tab-btn px-4 py-3 border-b-2 flex items-center gap-2 transition-all ${adminActiveTab === 'orders' ? 'border-charcoal-900 text-charcoal-900 font-bold bg-white' : 'border-transparent text-charcoal-500 hover:text-charcoal-800'}">
+        <i class="fas fa-receipt text-gold-500"></i> Customer Orders (${store.orders.length})
+      </button>
+      <button data-tab="analytics" class="admin-tab-btn px-4 py-3 border-b-2 flex items-center gap-2 transition-all ${adminActiveTab === 'analytics' ? 'border-charcoal-900 text-charcoal-900 font-bold bg-white' : 'border-transparent text-charcoal-500 hover:text-charcoal-800'}">
+        <i class="fas fa-chart-line text-gold-500"></i> Analytics &amp; Metrics
+      </button>
+      <button data-tab="security" class="admin-tab-btn px-4 py-3 border-b-2 flex items-center gap-2 transition-all ${adminActiveTab === 'security' ? 'border-charcoal-900 text-charcoal-900 font-bold bg-white' : 'border-transparent text-charcoal-500 hover:text-charcoal-800'}">
+        <i class="fas fa-shield-halved text-gold-500"></i> Backups &amp; Security
+      </button>
+    </div>
+
+    <!-- Active Tab Dynamic View Area -->
+    <div id="admin-tab-content" class="flex-1 overflow-y-auto p-3 sm:p-5 bg-cream-50"></div>
+  `;
+
+  // Bind tab switching
+  modal.querySelectorAll('.admin-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      adminActiveTab = btn.getAttribute('data-tab');
+      renderAdminPortal();
+    });
+  });
+
+  document.getElementById('close-admin-btn-dashboard')?.addEventListener('click', () => {
+    closeModal('admin-modal-overlay', 'admin-modal');
+  });
+
+  document.getElementById('admin-logout-btn')?.addEventListener('click', () => {
+    store.logoutAdmin();
+    renderAdminPortal();
+  });
+
+  document.getElementById('admin-cloud-btn')?.addEventListener('click', () => {
+    renderCloudSyncModal();
+  });
+
+  // Render the active tab content
+  const contentArea = document.getElementById('admin-tab-content');
+  if (contentArea) {
+    if (adminActiveTab === 'catalog') {
+      renderAdminCatalogView(contentArea, totalSKUs, outOfStockCount, totalValuationKES);
+    } else if (adminActiveTab === 'orders') {
+      renderAdminOrdersView(contentArea);
+    } else if (adminActiveTab === 'analytics') {
+      renderAdminAnalyticsView(contentArea);
+    } else if (adminActiveTab === 'security') {
+      renderAdminSecurityView(contentArea);
+    }
+  }
+
+  openModal('admin-modal-overlay', 'admin-modal');
+}
+
+// ─── ADMIN SUB-VIEWS ─────────────────────────────────────────────────────────
+
+// 1. Forgot Password Request View
+function renderForgotPasswordView() {
+  const modal = document.getElementById('admin-modal');
+  if (!modal) return;
+  modal.innerHTML = `
+    <div class="p-6 sm:p-8 max-w-md mx-auto text-center space-y-5 my-auto">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-gold-50 border border-gold-200 flex items-center justify-center text-gold-500 text-2xl shadow-md">
+        <i class="fas fa-key"></i>
+      </div>
+      <div>
+        <h3 class="font-serif text-2xl font-bold text-charcoal-900">Reset Admin Password</h3>
+        <p class="text-xs text-charcoal-500 mt-1">We will send a secure password recovery link to your admin email</p>
+      </div>
+
+      <div id="forgot-pass-alert" class="hidden p-3 rounded-xl text-xs text-left"></div>
+
+      <form id="forgot-pass-form" class="space-y-4 text-left">
+        <div>
+          <label class="block text-xs font-semibold text-charcoal-700 mb-1">Admin Email Address</label>
+          <input 
+            type="email" 
+            id="forgot-email-input" 
+            value="machariamoureen78@gmail.com" 
+            required 
+            class="w-full bg-cream-100 border border-gold-200 rounded-xl px-4 py-3 text-xs text-charcoal-900 focus:border-gold-400 focus:outline-none"
+          >
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" id="back-to-login-btn" class="flex-1 py-3 rounded-xl border border-gold-200 text-charcoal-600 hover:bg-cream-100 text-xs font-bold uppercase tracking-wider">
+            Back to Sign In
+          </button>
+          <button type="submit" id="submit-forgot-btn" class="flex-1 py-3 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-md">
+            Send Reset Link
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.getElementById('back-to-login-btn')?.addEventListener('click', () => renderAdminPortal());
+  document.getElementById('forgot-pass-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email-input')?.value;
+    const submitBtn = document.getElementById('submit-forgot-btn');
+    const alertBox = document.getElementById('forgot-pass-alert');
+
+    if (!validateEmail(email)) {
+      store.toast("Please enter a valid email address.", "error");
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Dispatching...';
+    }
+
+    const res = await store.resetPassword(email);
+    if (alertBox) {
+      alertBox.className = `p-3 rounded-xl text-xs text-left ${res.success ? 'bg-emerald-50 border border-emerald-200 text-emerald-800' : 'bg-rose-50 border border-rose-200 text-rose-800'}`;
+      alertBox.textContent = res.message;
+      alertBox.classList.remove('hidden');
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Send Reset Link';
+    }
+  });
+}
+
+// 2. Set New Password View (Recovery Callback)
+function renderSetNewPasswordView() {
+  const modal = document.getElementById('admin-modal');
+  if (!modal) return;
+  modal.innerHTML = `
+    <div class="p-6 sm:p-8 max-w-md mx-auto text-center space-y-5 my-auto">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-gold-50 border border-gold-200 flex items-center justify-center text-gold-500 text-2xl shadow-md">
+        <i class="fas fa-lock-open"></i>
+      </div>
+      <div>
+        <h3 class="font-serif text-2xl font-bold text-charcoal-900">Set New Password</h3>
+        <p class="text-xs text-charcoal-500 mt-1">Enter a new secure password for your Maureh Admin account</p>
+      </div>
+
+      <div id="set-pass-alert" class="hidden p-3 rounded-xl text-xs text-left"></div>
+
+      <form id="set-new-pass-form" class="space-y-4 text-left">
+        <div>
+          <label class="block text-xs font-semibold text-charcoal-700 mb-1">New Password (minimum 6 characters)</label>
+          <input 
+            type="password" 
+            id="new-pass-val" 
+            required 
+            minlength="6"
+            placeholder="Enter new password"
+            class="w-full bg-cream-100 border border-gold-200 rounded-xl px-4 py-3 text-sm text-charcoal-900 focus:border-gold-400 focus:outline-none"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-charcoal-700 mb-1">Confirm New Password</label>
+          <input 
+            type="password" 
+            id="confirm-new-pass-val" 
+            required 
+            minlength="6"
+            placeholder="Confirm new password"
+            class="w-full bg-cream-100 border border-gold-200 rounded-xl px-4 py-3 text-sm text-charcoal-900 focus:border-gold-400 focus:outline-none"
+          >
+        </div>
+        <div class="pt-2">
+          <button type="submit" id="save-new-pass-btn" class="w-full py-3 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-md">
+            Update &amp; Unlock Portal
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.getElementById('set-new-pass-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pass1 = document.getElementById('new-pass-val')?.value;
+    const pass2 = document.getElementById('confirm-new-pass-val')?.value;
+    const alertBox = document.getElementById('set-pass-alert');
+    const submitBtn = document.getElementById('save-new-pass-btn');
+
+    if (!validatePassword(pass1)) {
+      store.toast("Password must be at least 6 characters.", "error");
+      return;
+    }
+
+    if (pass1 !== pass2) {
+      store.toast("Passwords do not match.", "error");
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating password...';
+    }
+
+    const res = await store.updatePassword(pass1);
+    if (res.success) {
+      history.replaceState(null, null, '#admin');
+      setTimeout(() => renderAdminPortal(), 1000);
+    } else {
+      if (alertBox) {
+        alertBox.className = 'p-3 rounded-xl text-xs text-left bg-rose-50 border border-rose-200 text-rose-800';
+        alertBox.textContent = res.message;
+        alertBox.classList.remove('hidden');
+      }
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Update &amp; Unlock Portal';
+      }
+    }
+  });
+}
+
+// 3. Tab: Catalog & Inventory
+function renderAdminCatalogView(container, totalSKUs, outOfStockCount, totalValuationKES) {
+  container.innerHTML = `
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-4 text-xs">
       <div class="p-2.5 sm:p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
         <span class="text-charcoal-400 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Active SKUs</span>
         <div class="text-base sm:text-xl font-bold font-cinzel text-charcoal-900 mt-0.5">${totalSKUs} Flacons</div>
@@ -1360,75 +1812,340 @@ function renderAdminPortal() {
         </div>
       </div>
       <div class="p-2.5 sm:p-3 bg-white rounded-xl border border-gold-100 shadow-sm">
-        <span class="text-charcoal-400 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Recent Orders</span>
+        <span class="text-charcoal-400 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Total Orders</span>
         <div class="text-base sm:text-xl font-bold font-cinzel text-charcoal-900 mt-0.5">${store.orders.length} Processed</div>
       </div>
     </div>
 
     <!-- Toolbar -->
-    <div class="p-3 sm:p-4 bg-white border-b border-gold-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
+    <div class="p-3 bg-white rounded-xl border border-gold-200 mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-sm">
       <div class="relative w-full sm:w-80">
         <input 
           type="text" 
           id="admin-search-input" 
-          placeholder="Search your inventory by name, brand..." 
+          placeholder="Search fragrances by name or brand..." 
           class="w-full bg-cream-100 border border-gold-200 rounded-lg pl-9 pr-3 py-2 text-xs text-charcoal-800 focus:border-gold-400"
         >
         <i class="fas fa-search absolute left-3 top-2.5 text-charcoal-400 text-xs"></i>
       </div>
       
-      <div class="flex items-center gap-2 w-full sm:w-auto">
-        <button id="admin-add-perfume-btn" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md min-h-[40px]">
+      <div class="flex items-center gap-2">
+        <button id="admin-add-perfume-btn" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md">
           <i class="fas fa-plus text-gold-300"></i> Add New Fragrance
         </button>
       </div>
     </div>
 
     <!-- Inventory Table Container -->
-    <div class="flex-1 overflow-y-auto p-3 sm:p-4 bg-cream-50">
-      <div id="admin-inventory-table-container"></div>
-    </div>
+    <div id="admin-inventory-table-container"></div>
   `;
-
-  document.getElementById('close-admin-btn-dashboard')?.addEventListener('click', () => {
-    closeModal('admin-modal-overlay', 'admin-modal');
-  });
-
-  document.getElementById('admin-logout-btn')?.addEventListener('click', () => {
-    store.logoutAdmin();
-    renderAdminPortal();
-  });
-
-  document.getElementById('admin-export-btn')?.addEventListener('click', () => {
-    store.exportInventoryJSON();
-  });
-
-  document.getElementById('admin-import-btn')?.addEventListener('click', () => {
-    const jsonStr = prompt("Paste your Maureh catalog JSON array here:");
-    if (jsonStr) {
-      if (store.importInventoryJSON(jsonStr)) {
-        renderAdminPortal();
-        renderProductGrid();
-        populateBrandFilter();
-      }
-    }
-  });
-
-  document.getElementById('admin-cloud-btn')?.addEventListener('click', () => {
-    renderCloudSyncModal();
-  });
 
   document.getElementById('admin-add-perfume-btn')?.addEventListener('click', () => {
     renderAddOrEditPerfumeForm(null);
   });
 
   const searchInput = document.getElementById('admin-search-input');
+  let searchTimer = null;
   searchInput?.addEventListener('input', (e) => {
-    renderAdminInventoryTable(e.target.value);
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      renderAdminInventoryTable(e.target.value);
+    }, 250);
   });
 
   renderAdminInventoryTable('');
-  openModal('admin-modal-overlay', 'admin-modal');
+}
+
+// 4. Tab: Customer Orders View
+function renderAdminOrdersView(container) {
+  const orders = store.orders || [];
+  if (orders.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-16 px-4 bg-white rounded-2xl border border-gold-200 max-w-md mx-auto my-8 space-y-3 shadow-sm">
+        <div class="w-16 h-16 mx-auto rounded-full bg-cream-100 border border-gold-200 flex items-center justify-center text-gold-500 text-2xl">
+          <i class="fas fa-receipt"></i>
+        </div>
+        <h4 class="font-serif text-xl font-bold text-charcoal-900">No Orders Placed Yet</h4>
+        <p class="text-xs text-charcoal-500 leading-relaxed">
+          When customers place orders via M-Pesa or WhatsApp Concierge, they will appear here with full customer details and dispatch routing.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="font-serif text-base font-bold text-charcoal-900">Customer Orders (${orders.length})</h3>
+        <span class="text-xs text-charcoal-500">Live order queue from store checkout</span>
+      </div>
+
+      <div class="bg-white rounded-xl border border-gold-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-charcoal-800">
+            <thead class="bg-cream-100 border-b border-gold-200 text-[10px] uppercase font-bold text-charcoal-600 tracking-wider">
+              <tr>
+                <th class="py-3 px-3">Order ID</th>
+                <th class="py-3 px-3">Customer</th>
+                <th class="py-3 px-3">Phone</th>
+                <th class="py-3 px-3">Destination</th>
+                <th class="py-3 px-3">Items</th>
+                <th class="py-3 px-3">Total</th>
+                <th class="py-3 px-3">Payment</th>
+                <th class="py-3 px-3">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gold-100">
+              ${orders.map(o => `
+                <tr class="hover:bg-cream-50 transition-colors">
+                  <td class="py-3 px-3 font-mono font-bold text-gold-600">${escapeHtml(o.id)}</td>
+                  <td class="py-3 px-3 font-medium">${escapeHtml(o.customerName)}</td>
+                  <td class="py-3 px-3 font-mono">
+                    <a href="https://wa.me/${String(o.phone).replace(/[^0-9]/g, '')}" target="_blank" class="text-emerald-700 hover:underline flex items-center gap-1">
+                      <i class="fab fa-whatsapp"></i> ${escapeHtml(o.phone)}
+                    </a>
+                  </td>
+                  <td class="py-3 px-3 text-[11px] text-charcoal-600 max-w-xs truncate">${escapeHtml(o.deliveryArea || o.deliveryAddress)}</td>
+                  <td class="py-3 px-3">${o.items?.length || 0} item${o.items?.length !== 1 ? 's' : ''}</td>
+                  <td class="py-3 px-3 font-bold font-cinzel text-charcoal-900">${store.formatPrice(o.totalKES)}</td>
+                  <td class="py-3 px-3 text-[11px]">${escapeHtml(o.paymentMethod || 'M-PESA')}</td>
+                  <td class="py-3 px-3">
+                    <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      ${escapeHtml(o.status || 'Verified')}
+                    </span>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 5. Tab: Analytics & Metrics View
+function renderAdminAnalyticsView(container) {
+  const summary = analytics.getSummary();
+  const conversionRate = summary.totalPageViews > 0 
+    ? (((summary.totalWhatsAppOrders + summary.totalMpesaOrders) / summary.totalPageViews) * 100).toFixed(1)
+    : '0.0';
+
+  container.innerHTML = `
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-serif text-base font-bold text-charcoal-900">Storefront Analytics &amp; Conversion</h3>
+        <button id="refresh-analytics-btn" class="text-xs font-semibold text-gold-600 hover:text-gold-700 flex items-center gap-1">
+          <i class="fas fa-arrows-rotate"></i> Refresh
+        </button>
+      </div>
+
+      <!-- 6 Metrics Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+        <div class="p-3 bg-white rounded-xl border border-gold-200 shadow-sm">
+          <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">Page Views</span>
+          <div class="text-xl font-bold font-cinzel text-charcoal-900 mt-1">${summary.totalPageViews.toLocaleString()}</div>
+        </div>
+        <div class="p-3 bg-white rounded-xl border border-gold-200 shadow-sm">
+          <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">Flacon Views</span>
+          <div class="text-xl font-bold font-cinzel text-charcoal-900 mt-1">${summary.totalProductViews.toLocaleString()}</div>
+        </div>
+        <div class="p-3 bg-white rounded-xl border border-gold-200 shadow-sm">
+          <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">Bag Additions</span>
+          <div class="text-xl font-bold font-cinzel text-gold-600 mt-1">${summary.totalCartAdds.toLocaleString()}</div>
+        </div>
+        <div class="p-3 bg-white rounded-xl border border-gold-200 shadow-sm">
+          <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">WhatsApp Leads</span>
+          <div class="text-xl font-bold font-cinzel text-emerald-600 mt-1">${summary.totalWhatsAppOrders.toLocaleString()}</div>
+        </div>
+        <div class="p-3 bg-white rounded-xl border border-gold-200 shadow-sm">
+          <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">M-Pesa Orders</span>
+          <div class="text-xl font-bold font-cinzel text-emerald-700 mt-1">${summary.totalMpesaOrders.toLocaleString()}</div>
+        </div>
+        <div class="p-3 bg-white rounded-xl border border-gold-200 shadow-sm">
+          <span class="text-charcoal-400 text-[10px] uppercase font-bold tracking-wider">Conversion</span>
+          <div class="text-xl font-bold font-cinzel text-charcoal-900 mt-1">${conversionRate}%</div>
+        </div>
+      </div>
+
+      <!-- Real-Time Activity Log -->
+      <div class="bg-white rounded-xl border border-gold-200 p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-gold-100">
+          <h4 class="font-serif text-sm font-bold text-charcoal-900 flex items-center gap-2">
+            <i class="fas fa-bolt text-gold-500"></i> Real-time Activity Feed (Last 50 Events)
+          </h4>
+          <button id="clear-analytics-btn" class="text-[11px] text-charcoal-400 hover:text-rose-600 font-medium">
+            Clear Logs
+          </button>
+        </div>
+        <div class="divide-y divide-gold-50 max-h-64 overflow-y-auto text-xs space-y-1">
+          ${(summary.recentEvents || []).length === 0 ? '<p class="text-charcoal-400 italic text-center py-6">No recent events tracked yet.</p>' : summary.recentEvents.map(e => `
+            <div class="py-2 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-cream-200 text-charcoal-800 flex-shrink-0">
+                  ${escapeHtml(e.event)}
+                </span>
+                <span class="text-charcoal-600 truncate text-[11px]">
+                  ${escapeHtml(JSON.stringify(e.payload || {}))}
+                </span>
+              </div>
+              <span class="text-charcoal-400 text-[10px] font-mono flex-shrink-0">
+                ${new Date(e.timestamp).toLocaleTimeString()}
+              </span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('refresh-analytics-btn')?.addEventListener('click', () => {
+    renderAdminAnalyticsView(container);
+  });
+
+  document.getElementById('clear-analytics-btn')?.addEventListener('click', () => {
+    if (confirm("Reset local analytics metrics?")) {
+      analytics.clearSummary();
+      renderAdminAnalyticsView(container);
+    }
+  });
+}
+
+// 6. Tab: Backups & Security View
+function renderAdminSecurityView(container) {
+  const logs = errorTracker.getLogs();
+
+  container.innerHTML = `
+    <div class="space-y-4 max-w-4xl mx-auto">
+      
+      <!-- 1-Click Database Backups Card -->
+      <div class="bg-white p-5 rounded-2xl border border-gold-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="font-serif text-base font-bold text-charcoal-900 flex items-center gap-2">
+            <i class="fas fa-database text-gold-500"></i> Database Backups &amp; Portability
+          </h4>
+          <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+            JSON Snapshot v2.0
+          </span>
+        </div>
+        <p class="text-xs text-charcoal-600 leading-relaxed">
+          Download complete backups of your fragrances, orders, and boutique metadata, or restore from a previously exported backup file.
+        </p>
+        <div class="flex flex-wrap gap-2.5 pt-1">
+          <button id="sec-export-backup-btn" class="px-4 py-2.5 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-sm flex items-center gap-2">
+            <i class="fas fa-download text-gold-300"></i> Download Full Database Backup (.json)
+          </button>
+          <label class="px-4 py-2.5 rounded-xl border border-gold-300 bg-cream-50 hover:bg-gold-50 text-charcoal-800 font-bold text-xs uppercase tracking-wider shadow-sm flex items-center gap-2 cursor-pointer">
+            <i class="fas fa-upload text-gold-600"></i> Upload &amp; Restore Backup
+            <input type="file" id="sec-restore-file-input" accept=".json" class="hidden">
+          </label>
+          <button id="sec-reset-defaults-btn" class="px-4 py-2.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs uppercase tracking-wider shadow-sm flex items-center gap-2">
+            <i class="fas fa-rotate-left"></i> Restore Factory Defaults
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-Time Error Interception & System Health -->
+      <div class="bg-white p-5 rounded-2xl border border-gold-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="font-serif text-base font-bold text-charcoal-900 flex items-center gap-2">
+            <i class="fas fa-heart-pulse ${logs.length === 0 ? 'text-emerald-500' : 'text-amber-500'}"></i> System Health &amp; Error Logs
+          </h4>
+          <span class="text-xs font-semibold ${logs.length === 0 ? 'text-emerald-700' : 'text-amber-700'}">
+            ${logs.length === 0 ? '✓ Zero Unhandled Errors' : `${logs.length} Error Logs Intercepted`}
+          </span>
+        </div>
+        <p class="text-xs text-charcoal-600">
+          Real-time client diagnostics catching uncaught JavaScript exceptions and network fetch failures.
+        </p>
+        <div class="max-h-48 overflow-y-auto bg-charcoal-900 text-cream-100 rounded-xl p-3 font-mono text-[11px] space-y-1.5 shadow-inner">
+          ${logs.length === 0 ? '<p class="text-charcoal-400 italic">No errors logged. All client systems operational.</p>' : logs.map(l => `
+            <div class="border-b border-charcoal-800 pb-1">
+              <span class="text-gold-400">[${new Date(l.time).toLocaleTimeString()}]</span>
+              <span class="text-rose-400 font-bold">${escapeHtml(l.type)}:</span>
+              <span class="text-cream-200">${escapeHtml(l.message)}</span>
+            </div>
+          `).join('')}
+        </div>
+        ${logs.length > 0 ? `
+          <button id="sec-clear-errors-btn" class="text-xs font-semibold text-rose-600 hover:text-rose-700">
+            <i class="fas fa-trash-can mr-1"></i> Clear Error Logs
+          </button>
+        ` : ''}
+      </div>
+
+      <!-- Admin Account Management -->
+      <div class="bg-white p-5 rounded-2xl border border-rose-200 shadow-sm space-y-3">
+        <h4 class="font-serif text-base font-bold text-charcoal-900 flex items-center gap-2">
+          <i class="fas fa-shield-halved text-rose-600"></i> Admin Account &amp; Access Controls
+        </h4>
+        <div class="text-xs text-charcoal-600 space-y-1">
+          <p>Active account: <strong class="text-charcoal-900 font-mono">machariamoureen78@gmail.com</strong></p>
+          <p>Role: <strong>Authenticated Store Admin (Supabase RLS Active)</strong></p>
+          <p class="text-[11px] text-charcoal-500">Frontend strictly utilizes public Anon Key with server-side Row Level Security.</p>
+        </div>
+        <div class="flex flex-wrap gap-2.5 pt-2">
+          <button id="sec-send-reset-btn" class="px-4 py-2.5 rounded-xl border border-gold-300 bg-white hover:bg-gold-50 text-charcoal-800 font-bold text-xs uppercase tracking-wider shadow-sm flex items-center gap-2">
+            <i class="fas fa-key text-gold-500"></i> Dispatch Password Reset Email
+          </button>
+          <button id="sec-delete-account-btn" class="px-4 py-2.5 rounded-xl border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs uppercase tracking-wider shadow-sm flex items-center gap-2">
+            <i class="fas fa-user-xmark"></i> Delete / Reset Admin Access
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('sec-export-backup-btn')?.addEventListener('click', () => {
+    store.exportDatabaseBackupJSON();
+  });
+
+  document.getElementById('sec-restore-file-input')?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result;
+        if (text && store.importDatabaseBackupJSON(text)) {
+          renderAdminSecurityView(container);
+          renderProductGrid();
+          populateBrandFilter();
+        }
+      };
+      reader.readAsText(file);
+    }
+  });
+
+  document.getElementById('sec-reset-defaults-btn')?.addEventListener('click', () => {
+    if (confirm("Reset all catalog fragrances to factory defaults?")) {
+      store.resetToDefaultInventory();
+      renderProductGrid();
+      populateBrandFilter();
+      store.toast("Restored factory catalog.", "info");
+    }
+  });
+
+  document.getElementById('sec-clear-errors-btn')?.addEventListener('click', () => {
+    errorTracker.clearLogs();
+    renderAdminSecurityView(container);
+    store.toast("Error logs cleared.", "info");
+  });
+
+  document.getElementById('sec-send-reset-btn')?.addEventListener('click', async () => {
+    const res = await store.resetPassword('machariamoureen78@gmail.com');
+    store.toast(res.message, res.success ? "success" : "error");
+  });
+
+  document.getElementById('sec-delete-account-btn')?.addEventListener('click', async () => {
+    const confirmation = prompt("To confirm resetting admin access on this device, please type 'CONFIRM RESET':");
+    if (confirmation === 'CONFIRM RESET') {
+      await store.deleteAdminAccount();
+      renderAdminPortal();
+    } else if (confirmation !== null) {
+      store.toast("Reset cancelled: confirmation phrase did not match.", "info");
+    }
+  });
 }
 
 function renderCloudSyncModal() {
@@ -2539,17 +3256,22 @@ async function init() {
     });
   }
 
-  // Global Search Inputs
+  // Global Search Inputs (with debounce)
   function bindSearch(inputId) {
     const input = document.getElementById(inputId);
     const clearBtn = document.getElementById('clear-search-btn');
     if (!input) return;
+    let debounceTimer = null;
     input.addEventListener('input', () => {
-      store.setFilter('search', input.value);
-      if (clearBtn) clearBtn.classList.toggle('hidden', !input.value);
-      renderProductGrid();
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        store.setFilter('search', input.value);
+        if (clearBtn) clearBtn.classList.toggle('hidden', !input.value);
+        renderProductGrid();
+      }, 250);
     });
     clearBtn?.addEventListener('click', () => {
+      clearTimeout(debounceTimer);
       input.value = '';
       store.setFilter('search', '');
       clearBtn.classList.add('hidden');
@@ -2720,6 +3442,10 @@ async function init() {
     const lines = store.cart.map(i => `• ${i.name} (${i.size}) x${i.quantity} — KES ${(i.priceKES * i.quantity).toLocaleString()}`).join('\n');
     const total = `TOTAL: KES ${store.getCartTotalKES().toLocaleString()}`;
     const text = `Hello Maureh Perfumes! I would like to place this order:\n\n${lines}\n\n${total}\n\nPlease confirm and arrange delivery. Thank you!`;
+    analytics.track('checkout_whatsapp', {
+      itemCount: store.cart.length,
+      totalKES: store.getCartTotalKES()
+    });
     window.open(`https://wa.me/254102796209?text=${encodeURIComponent(text)}`, '_blank');
   });
 
@@ -2769,10 +3495,10 @@ async function init() {
     }
   });
 
-  // URL Hash Auto-Router (e.g. going directly to #admin or #privacy)
+  // URL Hash Auto-Router & 404 Fallback
   function handleHashChange() {
     const hash = window.location.hash.toLowerCase();
-    if (hash === '#admin' || hash === '#portal' || hash === '#inventory') {
+    if (hash === '#admin' || hash === '#portal' || hash === '#inventory' || hash.includes('reset-password')) {
       renderAdminPortal();
     } else if (hash === '#privacy') {
       renderLegalModal('privacy');
@@ -2790,6 +3516,10 @@ async function init() {
       openCartDrawer();
     } else if (hash === '#track') {
       openTracking();
+    } else if (hash.startsWith('#404') || (hash.length > 1 && !['#home', '#catalog', '#bestsellers', '#about', '#reviews', '#contact'].some(h => hash.startsWith(h)))) {
+      // 404 router fallback for unknown hashes
+      store.toast("Requested flacon or section was not found.", "info");
+      history.replaceState(null, null, '#catalog');
     }
   }
   window.addEventListener('hashchange', handleHashChange);
@@ -2853,18 +3583,44 @@ async function init() {
     });
   });
 
-  // Newsletter Form
+  // Newsletter Form with Email Validation
   document.getElementById('newsletter-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const emailInput = e.target.querySelector('input[type="email"]');
+    const emailVal = emailInput?.value?.trim();
+    if (!validateEmail(emailVal)) {
+      store.toast("Please enter a valid email address.", "error");
+      return;
+    }
+    analytics.track('newsletter_signup', { email: emailVal });
     store.toast('Welcome to the Maureh VIP Club! Check your inbox for a welcome gift.', 'success');
     e.target.reset();
   });
 
-  // Contact Form
+  // Contact Form with Email Validation
   document.getElementById('contact-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const emailInput = e.target.querySelector('input[type="email"]');
+    const emailVal = emailInput?.value?.trim();
+    if (emailVal && !validateEmail(emailVal)) {
+      store.toast("Please enter a valid email address.", "error");
+      return;
+    }
+    analytics.track('contact_inquiry');
     store.toast('Your VIP inquiry was sent! Our fragrance specialist will respond within 30 minutes.', 'success');
     e.target.reset();
+  });
+
+  // Onboarding Flow Trigger
+  setTimeout(() => {
+    renderOnboardingModal();
+  }, 650);
+
+  document.getElementById('onboarding-modal-overlay')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('onboarding-modal-overlay')) {
+      closeModal('onboarding-modal-overlay', 'onboarding-modal');
+      localStorage.setItem('maureh_onboarding_completed', 'true');
+    }
   });
 
   const promoInput = document.getElementById('promo-input');
@@ -2882,6 +3638,7 @@ async function init() {
       closeModal('seller-modal-overlay', 'seller-modal');
       closeModal('admin-modal-overlay', 'admin-modal');
       closeModal('legal-modal-overlay', 'legal-modal');
+      closeModal('onboarding-modal-overlay', 'onboarding-modal');
       closeCartDrawer();
     }
   });

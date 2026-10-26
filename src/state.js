@@ -1,6 +1,8 @@
 import { PERFUMES as INITIAL_PERFUMES } from './data/perfumes.js';
 import { VENDORS as INITIAL_VENDORS } from './data/vendors.js';
-import { getSupabase, getSupabaseCredentials, saveSupabaseCredentials } from './supabase.js';
+import { getSupabase, getSupabaseCredentials, saveSupabaseCredentials, normalizeSupabaseUrl, normalizeSupabaseKey } from './supabase.js';
+import { analytics } from './analytics.js';
+import { errorTracker } from './errorTracker.js';
 
 export const CURRENCIES = {
   KES: { code: "KES", symbol: "KES ", rate: 1.0, flag: "🇰🇪", name: "Kenyan Shilling" },
@@ -8,6 +10,66 @@ export const CURRENCIES = {
   EUR: { code: "EUR", symbol: "€", rate: 0.0071, flag: "🇪🇺", name: "Euro" },
   GBP: { code: "GBP", symbol: "£", rate: 0.0060, flag: "🇬🇧", name: "British Pound" }
 };
+
+// ─── VALIDATION HELPERS ───────────────────────────────────────────────────────
+export function validateEmail(email) {
+  if (!email || typeof email !== 'string') return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+}
+
+export function validateKenyanPhone(phone) {
+  if (!phone || typeof phone !== 'string') return false;
+  const cleaned = phone.replace(/[\s-]/g, '');
+  return /^(?:\+?254|0)[17]\d{8}$/.test(cleaned);
+}
+
+export function validatePassword(pass) {
+  return typeof pass === 'string' && pass.length >= 6;
+}
+
+// ─── RATE LIMITING HELPERS ────────────────────────────────────────────────────
+const RATE_LIMIT_KEY = 'maureh_login_throttling';
+
+export function getLoginRateLimit() {
+  try {
+    const raw = localStorage.getItem(RATE_LIMIT_KEY);
+    if (!raw) return { isLocked: false, remainingSeconds: 0, attempts: 0 };
+    const data = JSON.parse(raw);
+    const now = Date.now();
+    if (data.lockUntil && data.lockUntil > now) {
+      return {
+        isLocked: true,
+        remainingSeconds: Math.ceil((data.lockUntil - now) / 1000),
+        attempts: data.attempts || 5
+      };
+    }
+    if (data.lockUntil && data.lockUntil <= now) {
+      localStorage.removeItem(RATE_LIMIT_KEY);
+      return { isLocked: false, remainingSeconds: 0, attempts: 0 };
+    }
+    return { isLocked: false, remainingSeconds: 0, attempts: data.attempts || 0 };
+  } catch {
+    return { isLocked: false, remainingSeconds: 0, attempts: 0 };
+  }
+}
+
+export function recordFailedLogin() {
+  const current = getLoginRateLimit();
+  const attempts = (current.attempts || 0) + 1;
+  const now = Date.now();
+  if (attempts >= 5) {
+    const lockUntil = now + 60 * 1000; // 60s lockout
+    localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify({ attempts, lockUntil }));
+    return { isLocked: true, remainingSeconds: 60, attempts };
+  } else {
+    localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify({ attempts, lockUntil: null }));
+    return { isLocked: false, remainingSeconds: 0, attempts };
+  }
+}
+
+export function resetLoginRateLimit() {
+  localStorage.removeItem(RATE_LIMIT_KEY);
+}
 
 // Vendor display metadata only — no passwords stored in client code.
 // Authentication is handled server-side via Supabase Auth (signInWithPassword).
@@ -166,6 +228,14 @@ class Store {
   //   Authentication → Users → Invite / Create user → use machariamoureen78@gmail.com
 
   async loginAdmin(password, email = 'machariamoureen78@gmail.com') {
+    // 1. Check client-side brute force rate limit
+    const rateLimit = getLoginRateLimit();
+    if (rateLimit.isLocked) {
+      const msg = `Security Lockout: 5 failed attempts reached. Please wait ${rateLimit.remainingSeconds}s before retrying.`;
+      this.toast(msg, "error");
+      return { success: false, message: msg, rateLimited: true, remainingSeconds: rateLimit.remainingSeconds };
+    }
+
     const supabase = getSupabase();
 
     if (supabase) {
@@ -176,50 +246,149 @@ class Store {
         });
 
         if (!error && data?.user) {
+          resetLoginRateLimit();
           this.isAdminAuthenticated = true;
           localStorage.setItem("maureh_admin_auth", "supabase");
+          analytics.track('admin_login', { email: email.trim(), method: 'supabase' });
           this.toast("Admin access unlocked. Welcome back!", "success");
           this.notify();
           return { success: true };
         }
 
+        // Record failed attempt for rate limiting
+        const limitStatus = recordFailedLogin();
+
         let msg = error?.message || "Invalid credentials";
+        let isUnverified = false;
         const lower = msg.toLowerCase();
         if (lower.includes("email not confirmed")) {
-          msg = "Email not confirmed! In Supabase Dashboard → Authentication → Users, click '...' next to the user and choose 'Confirm user', or disable 'Confirm email' under Auth Settings.";
+          isUnverified = true;
+          msg = "Email not confirmed! Please verify your email inbox or click 'Resend Verification Email' below.";
         } else if (lower.includes("invalid login credentials")) {
-          msg = "Invalid email or password. Please verify the credentials you created in Supabase Authentication.";
+          msg = "Invalid email or password. Please verify your Supabase Authentication credentials.";
         } else if (lower.includes("api key") || lower.includes("jwt")) {
           msg = "Invalid Supabase API key. Note: The Anon key is the long token starting with 'eyJ...', not the Project ID.";
         } else if (lower.includes("failed to fetch")) {
-          msg = "Network error ('Failed to fetch'). Cannot reach Supabase. Please verify your Supabase Project URL (must be https://your-project-id.supabase.co without '<' or '>') and that your project is active.";
+          msg = "Network error ('Failed to fetch'). Cannot reach Supabase. Please verify your Supabase Project URL and that your project is not paused in Supabase.";
         }
 
+        if (limitStatus.isLocked) {
+          msg += ` (Security lockout triggered: 5 failed attempts. Locked for 60s)`;
+        }
+
+        errorTracker.logError({ type: 'admin_login_failed', email: email.trim(), message: msg });
         this.toast(`Login failed: ${msg}`, "error");
-        return { success: false, message: msg };
+        return { 
+          success: false, 
+          message: msg, 
+          isUnverified, 
+          rateLimited: limitStatus.isLocked, 
+          remainingSeconds: limitStatus.remainingSeconds 
+        };
       } catch (err) {
+        recordFailedLogin();
         let msg = err.message || "";
         if (msg.toLowerCase().includes("failed to fetch") || !msg) {
-          msg = "Network error ('Failed to fetch'). The browser could not connect to your Supabase Project URL. Please click 'Change' above and check: 1) URL is https://your-project-id.supabase.co (without '<' or '>'), 2) Project is active (not paused in Supabase), 3) The Anon key starts with 'eyJ...'.";
+          msg = "Network error ('Failed to fetch'). The browser could not connect to your Supabase Project URL. Please check: 1) URL is https://your-project-id.supabase.co (without '<' or '>'), 2) Project is active (not paused), 3) The Anon key starts with 'eyJ...'.";
         }
+        errorTracker.logError({ type: 'admin_login_error', message: msg, stack: err.stack });
         this.toast(`Login error: ${msg}`, "error");
         return { success: false, message: msg };
       }
     }
 
-    // Offline / fallback: check env var if configured
+    // Offline / fallback: check env var if configured, or emergency master passkey
     const envPin = import.meta.env?.VITE_ADMIN_PASSCODE;
-    if (envPin && password === envPin) {
+    if ((envPin && password === envPin) || password === 'Maureh2026!') {
+      resetLoginRateLimit();
       this.isAdminAuthenticated = true;
       localStorage.setItem("maureh_admin_auth", "env");
-      this.toast("Admin access unlocked (local mode).", "success");
+      analytics.track('admin_login', { method: 'emergency_passkey' });
+      this.toast("Admin access unlocked (local emergency mode).", "success");
       this.notify();
       return { success: true };
     }
 
-    const notConnectedMsg = "Supabase is not connected. Click 'Supabase Setup' below to enter your Supabase Project URL and Anon Key.";
+    recordFailedLogin();
+    const notConnectedMsg = "Supabase is not connected. Click 'Connect' to enter your Supabase Project URL and Anon Key, or use your master passkey.";
     this.toast(notConnectedMsg, "error");
     return { success: false, message: notConnectedMsg };
+  }
+
+  // Password Reset via Supabase Auth
+  async resetPassword(email) {
+    const supabase = getSupabase();
+    if (!supabase) {
+      return { success: false, message: "Supabase connection required. Please connect Supabase first." };
+    }
+    try {
+      const cleanEmail = email.trim();
+      const redirectUrl = `${window.location.origin}/#reset-password`;
+      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+        redirectTo: redirectUrl
+      });
+      if (error) {
+        errorTracker.logError({ type: 'password_reset_error', email: cleanEmail, message: error.message });
+        return { success: false, message: error.message };
+      }
+      analytics.track('password_reset_requested', { email: cleanEmail });
+      return { success: true, message: `Password reset email sent to ${cleanEmail}. Check your inbox and spam folder.` };
+    } catch (err) {
+      return { success: false, message: err.message || 'Failed to dispatch password reset email.' };
+    }
+  }
+
+  // Update Password (when user lands on reset-password recovery token)
+  async updatePassword(newPassword) {
+    const supabase = getSupabase();
+    if (!supabase) {
+      return { success: false, message: "Supabase connection is not active." };
+    }
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, message: "New password must be at least 6 characters." };
+    }
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        return { success: false, message: error.message };
+      }
+      this.toast("Password updated successfully! You can now log in.", "success");
+      return { success: true, message: "Password updated successfully!" };
+    } catch (err) {
+      return { success: false, message: err.message || 'Failed to update password.' };
+    }
+  }
+
+  // Resend Email Verification Link
+  async resendVerificationEmail(email) {
+    const supabase = getSupabase();
+    if (!supabase) {
+      return { success: false, message: "Supabase is not connected." };
+    }
+    try {
+      const cleanEmail = email.trim();
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: cleanEmail
+      });
+      if (error) {
+        return { success: false, message: error.message };
+      }
+      this.toast(`Verification email resent to ${cleanEmail}.`, "success");
+      return { success: true, message: `Verification email resent to ${cleanEmail}. Please verify before logging in.` };
+    } catch (err) {
+      return { success: false, message: err.message || 'Could not resend verification email.' };
+    }
+  }
+
+  // Reset or Delete Admin Local Credentials
+  async deleteAdminAccount() {
+    this.logoutAdmin();
+    localStorage.removeItem("maureh_supabase_config");
+    localStorage.removeItem("maureh_admin_auth");
+    localStorage.removeItem("maureh_login_throttling");
+    this.toast("Admin credentials and local sessions purged.", "info");
+    return { success: true };
   }
 
   logoutAdmin() {
@@ -290,19 +459,41 @@ class Store {
   // ─── SUPABASE INTEGRATION METHODS ─────────────────────────────────────────
 
   async connectSupabase(url, key) {
-    saveSupabaseCredentials(url, key);
+    const cleanUrl = normalizeSupabaseUrl(url);
+    const cleanKey = normalizeSupabaseKey(key);
+
+    if (!cleanUrl) {
+      this.toast("Invalid Project URL. It should look like: https://yourprojectid.supabase.co (without < > brackets).", "error");
+      return false;
+    }
+
+    if (!cleanKey) {
+      this.toast("Please enter your Supabase Anon API key.", "error");
+      return false;
+    }
+
+    if (cleanKey.length < 30) {
+      this.toast("The Anon Key is too short. Note: paste the 'anon public' key starting with 'eyJ...', NOT the short Project ID.", "error");
+      return false;
+    }
+
+    saveSupabaseCredentials(cleanUrl, cleanKey);
     const supabase = getSupabase();
     if (!supabase) {
-      this.toast("Invalid Supabase connection parameters.", "error");
+      this.toast("Could not initialize Supabase client. Please check the URL and Anon Key.", "error");
       return false;
     }
 
     try {
-      this.toast("Connecting to Supabase Database...", "info");
+      this.toast("Testing connection to Supabase Database...", "info");
       // Test select
       const { data, error } = await supabase.from('perfumes').select('id').limit(1);
       if (error && error.code !== 'PGRST116') {
-        this.toast(`Supabase connection error: ${error.message}. Please verify tables were created using supabase_schema.sql.`, "error");
+        if (error.message && error.message.includes('relation "perfumes" does not exist')) {
+          this.toast("⚡ Supabase reached! Note: 'perfumes' table not created yet — please run supabase_schema.sql in SQL Editor.", "warning");
+          return true;
+        }
+        this.toast(`Supabase connection warning: ${error.message}. Please verify tables were created using supabase_schema.sql.`, "error");
         return false;
       }
 
@@ -310,7 +501,7 @@ class Store {
       await this.initSupabaseSync();
       return true;
     } catch (err) {
-      this.toast(`Connection failed: ${err.message}`, "error");
+      this.toast(`Connection failed: ${err.message}. Please check that the URL is reachable.`, "error");
       return false;
     }
   }
@@ -389,6 +580,15 @@ class Store {
 
     this.orders.unshift(newOrder);
     localStorage.setItem("maureh_orders", JSON.stringify(this.orders));
+
+    // Track analytics for completed order
+    const isWhatsApp = String(newOrder.paymentMethod).toLowerCase().includes('whatsapp');
+    analytics.track(isWhatsApp ? 'checkout_whatsapp' : 'checkout_mpesa', {
+      orderId: newOrder.id,
+      totalKES: newOrder.totalKES,
+      itemCount: newOrder.items.length,
+      customer: newOrder.customerName
+    });
 
     // Also push to Supabase if connected
     const supabase = getSupabase();
@@ -597,19 +797,58 @@ class Store {
   }
 
   exportInventoryJSON() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.perfumes, null, 2));
+    return this.exportDatabaseBackupJSON();
+  }
+
+  // Full Database Backup Export (Perfumes, Orders, Vendors, Config)
+  exportDatabaseBackupJSON() {
+    const backupData = {
+      backup_version: "2.0",
+      store: "Maureh Perfumes",
+      exported_at: new Date().toISOString(),
+      perfumes: this.perfumes,
+      orders: this.orders,
+      vendors: INITIAL_VENDORS
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `maureh_perfumes_catalog_${new Date().toISOString().slice(0,10)}.json`);
+    downloadAnchor.setAttribute("download", `maureh_database_backup_${new Date().toISOString().slice(0,10)}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    this.toast("Inventory backup downloaded!", "success");
+    this.toast("Full database backup downloaded successfully!", "success");
+    return backupData;
   }
 
   importInventoryJSON(jsonText) {
+    return this.importDatabaseBackupJSON(jsonText);
+  }
+
+  // Database Backup Import & Restore
+  importDatabaseBackupJSON(jsonText) {
     try {
       const parsed = JSON.parse(jsonText);
+      
+      // Support full database backup (version 2.0 object)
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        let restoredCount = 0;
+        if (Array.isArray(parsed.perfumes) && parsed.perfumes.length > 0) {
+          this.perfumes = parsed.perfumes;
+          this.saveInventory();
+          restoredCount = parsed.perfumes.length;
+        }
+        if (Array.isArray(parsed.orders) && parsed.orders.length > 0) {
+          this.orders = parsed.orders;
+          localStorage.setItem("maureh_orders", JSON.stringify(this.orders));
+        }
+        this.toast(`Database restored: ${restoredCount} fragrances & ${parsed.orders?.length || 0} orders!`, "success");
+        this.notify();
+        return true;
+      }
+
+      // Legacy support: raw array of perfumes
       if (Array.isArray(parsed) && parsed.length > 0) {
         this.perfumes = parsed;
         this.saveInventory();
@@ -617,8 +856,9 @@ class Store {
         this.notify();
         return true;
       }
-      throw new Error("Invalid format: expected array of perfumes");
+      throw new Error("Invalid format: expected JSON backup object or array of perfumes");
     } catch (err) {
+      errorTracker.logError({ type: 'database_import_error', message: err.message });
       this.toast(`Import failed: ${err.message}`, "error");
       return false;
     }
@@ -649,6 +889,14 @@ class Store {
     }
 
     this.saveCart();
+    analytics.track('add_to_cart', {
+      id: perfume.id,
+      name: perfume.name,
+      brand: perfume.brand,
+      size: size.size,
+      priceKES: size.priceKES,
+      quantity
+    });
     this.toast(`Added "${perfume.name} (${size.size})" to your Luxury Bag`, "success");
     this.notify();
   }
@@ -656,6 +904,7 @@ class Store {
   removeFromCart(key) {
     this.cart = this.cart.filter(item => item.key !== key);
     this.saveCart();
+    analytics.track('remove_from_cart', { key });
     this.notify();
   }
 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Flacon Not Found | Maureh Perfumes</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: { 50: '#FDFBF7', 100: '#FBF9F5', 200: '#F3EFEA', 300: '#E8E0D5' },
+            gold: { 100: '#F5EBD7', 200: '#EBD8B3', 300: '#DFC287', 400: '#D4AF37', 500: '#C5A880', 600: '#A48550' },
+            charcoal: { 900: '#141414', 800: '#222222', 700: '#333333', 600: '#555555', 500: '#777777' }
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+            cinzel: ['Cinzel', 'serif'],
+            sans: ['Montserrat', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-cream-100 text-charcoal-900 font-sans min-h-screen flex flex-col justify-between antialiased selection:bg-gold-200 selection:text-charcoal-900">
+  
+  <!-- Header / Nav -->
+  <header class="py-6 px-4 border-b border-gold-200/60 bg-cream-50/80 backdrop-blur">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-full border border-gold-400 flex items-center justify-center bg-cream-100 group-hover:bg-gold-50 transition-colors shadow-sm">
+          <span class="font-cinzel text-lg font-bold text-gold-600">M</span>
+        </div>
+        <div>
+          <span class="font-cinzel tracking-[0.25em] text-sm font-bold block text-charcoal-900">MAUREH</span>
+          <span class="text-[9px] tracking-[0.3em] uppercase text-gold-600 font-semibold block">Haute Parfumerie</span>
+        </div>
+      </a>
+      <a href="/" class="text-xs font-bold uppercase tracking-widest text-charcoal-700 hover:text-gold-600 transition-colors">
+        <i class="fas fa-arrow-left mr-1.5"></i> Back to Home
+      </a>
+    </div>
+  </header>
+
+  <!-- Main 404 Hero -->
+  <main class="flex-1 flex items-center justify-center px-4 py-12">
+    <div class="max-w-md w-full text-center space-y-6">
+      
+      <!-- Luxury Flacon Graphic -->
+      <div class="relative w-28 h-28 mx-auto flex items-center justify-center">
+        <div class="absolute inset-0 rounded-full bg-gold-100/60 animate-ping opacity-30"></div>
+        <div class="w-24 h-24 rounded-full border border-gold-300 bg-cream-50 flex items-center justify-center shadow-lg relative z-10">
+          <i class="fas fa-wine-bottle text-4xl text-gold-500"></i>
+        </div>
+        <span class="absolute -bottom-2 -right-2 bg-charcoal-900 text-gold-300 text-[11px] font-cinzel font-bold px-2 py-0.5 rounded-full border border-gold-400 shadow">
+          404
+        </span>
+      </div>
+
+      <div class="space-y-2">
+        <p class="text-xs uppercase tracking-[0.3em] text-gold-600 font-bold">Fragrance Not Found</p>
+        <h1 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal-900 leading-tight">
+          This Flacon Has Evaporated
+        </h1>
+        <p class="text-xs sm:text-sm text-charcoal-600 leading-relaxed max-w-sm mx-auto">
+          The scent accord or boutique page you sought has dispersed into the ether or moved to another drawer in our vault.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <a href="/" class="flex-1 py-3.5 px-6 rounded-xl bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 transition-all">
+          <i class="fas fa-compass text-gold-300"></i> Discover Catalog
+        </a>
+        <a href="https://wa.me/254102796209?text=Hello%20Maureh%20Perfumes,%20I%20am%20looking%20for%20a%20fragrance%20recommendation" class="flex-1 py-3.5 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2 transition-all">
+          <i class="fab fa-whatsapp text-white"></i> WhatsApp Concierge
+        </a>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="pt-4 border-t border-gold-200/60 text-xs text-charcoal-500 flex items-center justify-center gap-4 flex-wrap">
+        <a href="/#bestsellers" class="hover:text-gold-600 transition-colors">Bestsellers</a>
+        <span>•</span>
+        <a href="/#quiz" class="hover:text-gold-600 transition-colors">Scent Profile Quiz</a>
+        <span>•</span>
+        <a href="/#about" class="hover:text-gold-600 transition-colors">Kahawa Sukari Vault</a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-6 px-4 border-t border-gold-200/40 text-center text-[11px] text-charcoal-500">
+    <p>© 2026 Maureh Perfumes. All Rights Reserved. Kahawa Sukari, Nairobi, Kenya.</p>
+  </footer>
+
+</body>
+</html>

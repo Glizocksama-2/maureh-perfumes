@@ -2,15 +2,21 @@ import { createClient } from '@supabase/supabase-js';
 
 export function normalizeSupabaseUrl(url) {
   if (!url) return '';
-  let cleaned = String(url).trim().replace(/['"]/g, '');
+  let cleaned = String(url).trim();
 
-  // Detect unresolved placeholders like https://<your-project>.supabase.co
-  if (cleaned.includes('<') || cleaned.includes('>') || cleaned.includes('your-project')) {
+  // Strip variable assignment prefixes if user pasted "VITE_SUPABASE_URL = ..."
+  cleaned = cleaned.replace(/^VITE_SUPABASE_URL\s*=\s*/i, '');
+
+  // Strip quotes, semicolons, brackets, and whitespace
+  cleaned = cleaned.replace(/['";\s]/g, '').replace(/[<>]/g, '');
+
+  // Check if it's an unreplaced literal placeholder
+  if (cleaned.toLowerCase().includes('your-project')) {
     return '';
   }
 
-  // If user entered only their project reference ID (e.g. 20 alphanumeric characters)
-  if (/^[a-z0-9_-]{12,30}$/i.test(cleaned)) {
+  // If user entered only their project reference ID (e.g. 15-30 alphanumeric characters)
+  if (/^[a-z0-9_-]{12,35}$/i.test(cleaned)) {
     cleaned = `https://${cleaned}.supabase.co`;
   } else if (!/^https?:\/\//i.test(cleaned)) {
     cleaned = `https://${cleaned}`;
@@ -22,10 +28,18 @@ export function normalizeSupabaseUrl(url) {
 
 export function normalizeSupabaseKey(key) {
   if (!key) return '';
-  let cleaned = String(key).trim().replace(/['"\s]/g, '');
-  if (cleaned.includes('<') || cleaned.includes('>') || cleaned.includes('your-anon-key')) {
+  let cleaned = String(key).trim();
+
+  // Strip variable assignment prefixes if user pasted "VITE_SUPABASE_ANON_KEY = ..."
+  cleaned = cleaned.replace(/^VITE_SUPABASE_ANON_KEY\s*=\s*/i, '');
+
+  // Strip quotes, semicolons, brackets, and whitespace
+  cleaned = cleaned.replace(/['";\s]/g, '').replace(/[<>]/g, '');
+
+  if (cleaned.toLowerCase().includes('your-anon-key')) {
     return '';
   }
+
   return cleaned;
 }
 
@@ -50,8 +64,8 @@ export function getSupabaseCredentials() {
   const isConfigured = Boolean(
     supabaseUrl && 
     supabaseKey && 
-    supabaseUrl.startsWith('https://') &&
-    supabaseUrl.includes('.supabase.co')
+    /^https?:\/\/[a-z0-9_.-]+/i.test(supabaseUrl) &&
+    supabaseKey.length > 20
   );
 
   return { supabaseUrl, supabaseKey, isConfigured };

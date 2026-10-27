@@ -2522,7 +2522,7 @@ function renderAddOrEditPerfumeForm(perfumeToEdit = null) {
       <div class="space-y-3">
         <h4 class="font-cinzel text-xs font-bold text-gold-600 uppercase tracking-wider border-b border-gold-100 pb-1 flex items-center justify-between">
           <span>2. Flacon Imagery & Photo Upload</span>
-          <span class="text-[10px] text-charcoal-400 font-sans font-normal">Drag & drop or URL</span>
+          <span class="text-[10px] text-charcoal-400 font-sans font-normal">Drag & drop or tap to browse</span>
         </h4>
 
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
@@ -2533,16 +2533,11 @@ function renderAddOrEditPerfumeForm(perfumeToEdit = null) {
 
           <div class="sm:col-span-8 space-y-2">
             <!-- Drag and Drop Dropzone -->
-            <div id="image-dropzone" class="p-4 rounded-xl border-2 border-dashed border-gold-300 hover:border-gold-500 bg-cream-50 hover:bg-gold-50 text-center cursor-pointer transition-all">
-              <i class="fas fa-cloud-arrow-up text-gold-500 text-xl mb-1"></i>
-              <p class="font-bold text-charcoal-800 text-xs">Drag & Drop Flacon Photo Here</p>
-              <p class="text-[10px] text-charcoal-400">or click to browse from device / camera</p>
+            <div id="image-dropzone" class="p-6 sm:p-4 rounded-xl border-2 border-dashed border-gold-300 hover:border-gold-500 active:border-gold-500 bg-cream-50 hover:bg-gold-50 active:bg-gold-50 text-center cursor-pointer transition-all min-h-[120px] flex flex-col items-center justify-center">
+              <i class="fas fa-cloud-arrow-up text-gold-500 text-2xl sm:text-xl mb-2 sm:mb-1"></i>
+              <p class="font-bold text-charcoal-800 text-sm sm:text-xs">Tap to Upload or Drag & Drop</p>
+              <p class="text-xs sm:text-[10px] text-charcoal-400 mt-1">Supports camera, gallery & file browser</p>
               <input type="file" id="file-upload-input" accept="image/*" class="hidden">
-            </div>
-
-            <div class="relative">
-              <span class="text-[10px] text-charcoal-400">Or enter Direct Image URL:</span>
-              <input type="url" id="form-image" value="${p.image || ''}" placeholder="https://..." class="w-full bg-cream-100 border border-gold-200 rounded-lg p-2 text-xs text-charcoal-800 mt-0.5">
             </div>
           </div>
         </div>
@@ -2640,7 +2635,6 @@ function renderAddOrEditPerfumeForm(perfumeToEdit = null) {
   const dropzone = document.getElementById('image-dropzone');
   const fileInput = document.getElementById('file-upload-input');
   const previewImg = document.getElementById('form-image-preview');
-  const urlInput = document.getElementById('form-image');
 
   dropzone?.addEventListener('click', () => fileInput?.click());
   
@@ -2660,7 +2654,6 @@ function renderAddOrEditPerfumeForm(perfumeToEdit = null) {
       processImageFile(e.dataTransfer.files[0], (dataUrl) => {
         currentImageDataUrl = dataUrl;
         if (previewImg) previewImg.src = dataUrl;
-        if (urlInput) urlInput.value = dataUrl;
         store.toast('Photo uploaded and formatted successfully!', 'success');
       });
     }
@@ -2671,16 +2664,8 @@ function renderAddOrEditPerfumeForm(perfumeToEdit = null) {
       processImageFile(e.target.files[0], (dataUrl) => {
         currentImageDataUrl = dataUrl;
         if (previewImg) previewImg.src = dataUrl;
-        if (urlInput) urlInput.value = dataUrl;
         store.toast('Photo uploaded and formatted successfully!', 'success');
       });
-    }
-  });
-
-  urlInput?.addEventListener('input', (e) => {
-    if (e.target.value && previewImg) {
-      previewImg.src = e.target.value;
-      currentImageDataUrl = e.target.value;
     }
   });
 
